@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مختبر العلوم ثلاثي الأبعاد - الصف الرابع</title>
+<meta name="description" content="مختبر علوم تفاعلي ثلاثي الأبعاد لمنهاج الصف الرابع - الفصل الأول">
+<meta name="theme-color" content="#1b5e20">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مختبر العلوم">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-dark:#1b5e20;
+    --green:#2e7d32;
+    --green-light:#66bb6a;
+    --gold:#f2b705;
+    --paper:#fbf9f2;
+    --ink:#20321f;
+    --radius:20px;
+    --shadow: 0 10px 30px rgba(0,0,0,.18);
+    --u1:#2e7d32; --u1b:#66bb6a;
+    --u2:#00796b; --u2b:#4db6ac;
+    --u3:#6a1b9a; --u3b:#ab47bc;
+    --u4:#e65100; --u4b:#ff9800;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --paper:#14201a; --ink:#eef3ea; }
+  }
+  :root[data-theme="dark"]{ --paper:#14201a; --ink:#eef3ea; }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; font-family:'Tajawal','Cairo',sans-serif; background:
+      radial-gradient(1200px 600px at 100% -10%, rgba(102,187,106,.25), transparent 60%),
+      radial-gradient(1000px 500px at -10% 110%, rgba(242,183,5,.18), transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    overflow-x:hidden;
+  }
+  .app{max-width:1000px;margin:0 auto;padding:14px 16px 40px;}
+
+  /* ===== Header ===== */
+  header.top{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg,var(--green-dark),var(--green));
+    color:#fff; padding:14px 16px; border-radius:0 0 18px 18px;
+    box-shadow:var(--shadow);
+    margin:0 -16px 18px;
+  }
+  header.top .back-btn{
+    width:38px;height:38px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.18); color:#fff; font-size:18px; cursor:pointer;
+    display:none; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  header.top .back-btn.show{display:flex;}
+  header.top .titles{flex:1; min-width:0;}
+  header.top h1{font-size:17px; margin:0; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  header.top p{font-size:12px; margin:2px 0 0; opacity:.85;}
+  header.top .badge{
+    background:var(--gold); color:#3a2a00; font-weight:800; font-size:12px;
+    padding:5px 10px; border-radius:999px; flex-shrink:0;
+  }
+
+  .screen{display:none; animation:fadeUp .35s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ===== Home ===== */
+  .welcome{
+    text-align:center; padding:10px 6px 22px;
+  }
+  .welcome .orb{
+    width:120px;height:120px;margin:6px auto 10px; position:relative;
+    perspective:700px;
+  }
+  .welcome .orb .sphere{
+    width:100%;height:100%;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #a5d6a7, var(--green) 55%, var(--green-dark) 100%);
+    box-shadow:0 18px 40px rgba(27,94,32,.45), inset -10px -14px 30px rgba(0,0,0,.25), inset 10px 10px 20px rgba(255,255,255,.25);
+    display:flex;align-items:center;justify-content:center;font-size:52px;
+    animation:spin 7s linear infinite;
+  }
+  @keyframes spin{ from{transform:rotateY(0deg);} to{transform:rotateY(360deg);} }
+  .welcome h2{font-size:22px; font-weight:900; margin:4px 0 2px; color:var(--green-dark);}
+  .welcome p{font-size:14px; opacity:.75; margin:0 0 4px;}
+
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (min-width:640px){ .grid{grid-template-columns:repeat(2,1fr);} }
+
+  .unit-card{
+    position:relative; border-radius:var(--radius); padding:18px 14px 16px;
+    color:#fff; cursor:pointer; overflow:hidden; min-height:148px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    box-shadow:var(--shadow); transform:perspective(600px) rotateX(0deg);
+    transition:transform .25s ease, box-shadow .25s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .unit-card:active{transform:perspective(600px) rotateX(6deg) scale(.97);}
+  .unit-card .num{
+    position:absolute; top:10px; inset-inline-start:12px;
+    background:rgba(255,255,255,.22); font-weight:900; font-size:12px;
+    padding:3px 10px; border-radius:999px;
+  }
+  .unit-card .icon3d{
+    position:absolute; top:6px; inset-inline-end:8px; font-size:54px;
+    filter:drop-shadow(0 10px 10px rgba(0,0,0,.25));
+    animation:float 3.5s ease-in-out infinite;
+  }
+  @keyframes float{ 0%,100%{transform:translateY(0) rotate(-4deg);} 50%{transform:translateY(-8px) rotate(4deg);} }
+  .unit-card h3{font-size:15px; margin:0 0 2px; font-weight:800; line-height:1.35;}
+  .unit-card span.count{font-size:11px; opacity:.9;}
+
+  .u1{background:linear-gradient(145deg,var(--u1),var(--u1b));}
+  .u2{background:linear-gradient(145deg,var(--u2),var(--u2b));}
+  .u3{background:linear-gradient(145deg,var(--u3),var(--u3b));}
+  .u4{background:linear-gradient(145deg,var(--u4),var(--u4b));}
+
+  /* ===== Lessons list ===== */
+  .lesson-row{
+    display:flex; align-items:center; gap:14px; background:#fff; color:var(--ink);
+    border-radius:16px; padding:14px; margin-bottom:12px; box-shadow:var(--shadow);
+    cursor:pointer; border-inline-start:6px solid var(--accent,#2e7d32);
+  }
+  :root[data-theme="dark"] .lesson-row, @media (prefers-color-scheme: dark){ .lesson-row{ } }
+  .lesson-row .lnum{
+    width:40px;height:40px;border-radius:12px; flex-shrink:0;
+    background:var(--accent,#2e7d32); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:16px; box-shadow:0 6px 14px rgba(0,0,0,.25);
+  }
+  .lesson-row .ltext{flex:1;}
+  .lesson-row h4{margin:0 0 2px; font-size:15px; font-weight:800;}
+  .lesson-row span{font-size:12px; opacity:.65;}
+  .lesson-row .arrow{font-size:18px; opacity:.4;}
+
+  /* ===== Topic cards (flip, 3D) ===== */
+  .topic-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (min-width:560px){ .topic-grid{grid-template-columns:repeat(3,1fr);} }
+
+  .flip-card{ perspective:1000px; height:190px; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  .flip-inner{
+    position:relative; width:100%; height:100%; transition:transform .6s cubic-bezier(.2,.9,.3,1);
+    transform-style:preserve-3d;
+  }
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:16px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:12px; text-align:center; box-shadow:var(--shadow);
+  }
+  .flip-front{
+    background:linear-gradient(160deg,#fff,#f1f7f0);
+    border:2px solid var(--accent,#2e7d32);
+  }
+  .flip-front .badge3d{
+    width:64px;height:64px;border-radius:50%;
+    background:radial-gradient(circle at 30% 28%, #ffffff, var(--accent,#2e7d32) 65%);
+    display:flex;align-items:center;justify-content:center; font-size:32px;
+    box-shadow:0 10px 18px rgba(0,0,0,.25), inset -6px -8px 14px rgba(0,0,0,.2), inset 6px 6px 10px rgba(255,255,255,.4);
+    margin-bottom:8px; animation:spin 6s linear infinite;
+  }
+  .flip-front h5{margin:0; font-size:13.5px; font-weight:800; color:var(--ink);}
+  .flip-front .en{font-size:10px; opacity:.55; margin-top:2px;}
+  .flip-front .tap-hint{position:absolute; bottom:6px; font-size:9px; opacity:.4;}
+  .flip-back{
+    background:var(--accent,#2e7d32); color:#fff; transform:rotateY(180deg);
+  }
+  .flip-back p{font-size:12px; line-height:1.6; margin:0;}
+  .flip-back h5{font-size:12.5px; margin:0 0 6px; font-weight:800; border-bottom:1px solid rgba(255,255,255,.4); padding-bottom:4px;}
+
+  footer.note{text-align:center; font-size:11px; opacity:.45; margin-top:26px; line-height:1.8;}
+
+  /* ===== Search ===== */
+  .search-wrap{
+    position:relative; max-width:420px; margin:4px auto 20px;
+  }
+  .search-wrap input{
+    width:100%; padding:12px 42px 12px 16px; border-radius:999px; border:2px solid rgba(46,125,50,.25);
+    background:#fff; color:var(--ink); font-family:inherit; font-size:14px; outline:none;
+    box-shadow:0 6px 16px rgba(0,0,0,.08);
+  }
+  .search-wrap input:focus{border-color:var(--green);}
+  .search-icon{position:absolute; inset-inline-end:14px; top:50%; transform:translateY(-50%); opacity:.5; font-size:15px;}
+
+  /* ===== Quiz button ===== */
+  .quiz-btn{
+    display:block; width:100%; max-width:420px; margin:0 auto 18px; padding:13px 16px;
+    border:none; border-radius:14px; cursor:pointer; font-family:inherit; font-weight:800; font-size:14px;
+    background:linear-gradient(135deg,var(--gold),#ffd54f); color:#3a2a00; box-shadow:var(--shadow);
+  }
+  .quiz-btn:active{transform:scale(.98);}
+
+  /* ===== Quiz ===== */
+  .quiz-wrap{max-width:480px; margin:0 auto;}
+  .quiz-progress{font-size:12px; opacity:.6; text-align:center; margin-bottom:10px;}
+  .quiz-card{background:#fff; border-radius:18px; padding:20px 18px; box-shadow:var(--shadow); text-align:center;}
+  .quiz-card .qicon{font-size:40px; margin-bottom:8px; display:block;}
+  .quiz-card h4{font-size:15px; line-height:1.6; margin:0 0 16px;}
+  .quiz-options{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    padding:12px 14px; border-radius:12px; border:2px solid rgba(46,125,50,.2); background:#fbf9f2;
+    cursor:pointer; font-family:inherit; font-size:13px; text-align:right; color:var(--ink);
+  }
+  .quiz-opt.correct{background:#c8e6c9; border-color:#2e7d32; font-weight:800;}
+  .quiz-opt.wrong{background:#ffcdd2; border-color:#c62828;}
+  .quiz-opt[disabled]{pointer-events:none;}
+  .quiz-next{
+    margin-top:16px; padding:11px 20px; border:none; border-radius:999px; background:var(--green);
+    color:#fff; font-weight:800; font-family:inherit; cursor:pointer; display:none;
+  }
+  .quiz-result{text-align:center; padding:30px 10px;}
+  .quiz-result .score{font-size:46px; font-weight:900; color:var(--green-dark); margin:10px 0;}
+  .quiz-result .again{
+    margin-top:18px; padding:12px 24px; border:none; border-radius:999px; background:var(--gold);
+    color:#3a2a00; font-weight:800; font-family:inherit; cursor:pointer;
+  }
+
+  ::selection{background:var(--gold); color:#000;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <button class="back-btn" id="backBtn" aria-label="رجوع">➜</button>
+    <div class="titles">
+      <h1 id="headerTitle">مختبر العلوم ثلاثي الأبعاد</h1>
+      <p id="headerSub">الصف الرابع • الفصل الدراسي الأول</p>
+    </div>
+    <div class="badge">4</div>
+  </header>
+
+  <!-- HOME -->
+  <section class="screen active" id="screen-home">
+    <div class="welcome">
+      <div class="orb"><div class="sphere">🔬</div></div>
+      <h2>أهلًا بك في المختبر!</h2>
+      <p>اختر وحدة لتبدأ الاستكشاف ثلاثي الأبعاد</p>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔎</span>
+      <input id="searchInput" type="search" placeholder="ابحثي عن مفهوم... مثل: الخلية">
+    </div>
+    <div class="grid" id="unitsGrid"></div>
+    <footer class="note">
+      مبني على كتاب الطالب ودليل المعلم لمادة العلوم - الصف الرابع - الفصل الأول<br>
+      المركز الوطني لتطوير المناهج والتقويم
+    </footer>
+  </section>
+
+  <!-- LESSONS LIST -->
+  <section class="screen" id="screen-unit">
+    <div id="lessonsList"></div>
+  </section>
+
+  <!-- TOPIC CARDS -->
+  <section class="screen" id="screen-lesson">
+    <button class="quiz-btn" id="quizBtn">🧠 اختبار سريع على مفاهيم هذا الدرس</button>
+    <div class="topic-grid" id="topicsGrid"></div>
+  </section>
+
+  <!-- SEARCH RESULTS -->
+  <section class="screen" id="screen-search">
+    <div class="topic-grid" id="searchGrid"></div>
+    <p id="searchEmpty" style="display:none;text-align:center;opacity:.6;margin-top:30px;">لا توجد نتائج مطابقة، جربي كلمة أخرى.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="screen-quiz">
+    <div class="quiz-wrap" id="quizWrap"></div>
+  </section>
+
+</div>
+
+<script>
+/* ================= DATA: مبني على كتاب الطالب ودليل المعلم - علوم - صف رابع - فصل أول ================= */
+const DATA = [
+  { id:1, key:'u1', title:'تصنيف الكائنات الحية', icon:'🧬', accent:'#2e7d32',
+    lessons:[
+      { title:'التصنيف', topics:[
+        {term:'الخلية', en:'Cell', icon:'🔬', def:'وحدة البناء والوظيفة لجميع الكائنات الحية.'},
+        {term:'وحيدة الخلية', en:'Unicellular', icon:'🦠', def:'كائنات حية بسيطة التركيب، تتكون أجسامها من خلية واحدة فقط.'},
+        {term:'عديدة الخلايا', en:'Multicellular', icon:'🧅', def:'كائنات حية معقدة التركيب، تتكون أجسامها من عدة خلايا.'},
+        {term:'المملكة', en:'Kingdom', icon:'👑', def:'مجموعة تشترك جميع أفرادها في صفات أساسية.'},
+        {term:'التصنيف', en:'Classification', icon:'🗂️', def:'وضع الكائنات الحية في مجموعات بناء على أوجه التشابه والاختلاف بينها؛ لتسهيل دراستها.'},
+        {term:'مفتاح التصنيف', en:'Classification Key', icon:'🔑', def:'أداة تستخدم للتعرف إلى الكائنات الحية عن طريق خصائصها، بتوجيه أسئلة مباشرة تكون الإجابة عنها بـ (نعم) أو (لا).'},
+      ]},
+      { title:'ممالك الكائنات الحية', topics:[
+        {term:'مملكة البدائيات والبكتيريا', en:'Monera', icon:'🦠', def:'أصغر الكائنات الحية وأبسطها، تتكون من خلية واحدة، بعضها مفيد (مثل بكتيريا الهضم) وبعضها ضار يسبب الأمراض.'},
+        {term:'مملكة الطلائعيات', en:'Protista', icon:'💧', def:'كائنات حية بسيطة، منها ما يتكون من خلية واحدة كالبراميسيوم، ومنها الطحالب المفيدة، ومنها ما يسبب أمراضًا كالملاريا.'},
+        {term:'مملكة الفطريات', en:'Fungi', icon:'🍄', def:'كائنات حية لا تصنع غذاءها بنفسها، وتعتمد في غذائها على كائنات حية أخرى، مثل فطر المشروم (مفيد) وفطر عفن الخبز (ضار).'},
+        {term:'مملكة النباتات', en:'Plants Kingdom', icon:'🌿', def:'كائنات حية عديدة الخلايا تصنع غذاءها بنفسها.'},
+        {term:'مملكة الحيوانات', en:'Animals Kingdom', icon:'🐾', def:'كائنات حية عديدة الخلايا، تعتمد في غذائها على مخلوقات أخرى.'},
+      ]},
+      { title:'إثراء وتوسع: خطر الانقراض', topics:[
+        {term:'الكائنات المهددة بالانقراض', en:'Endangered Species', icon:'🐢', def:'كائنات حية تعجز عن التكيف مع التغيرات التي تطرأ على بيئتها، فتتناقص أعدادها بشدة، وتصبح مهددة بالاختفاء التام من منطقة ما؛ مثل بعض أنواع السلاحف البحرية.'},
+      ]},
+    ]
+  },
+  { id:2, key:'u2', title:'دورات حياة الكائنات الحية والعلاقات بينها', icon:'🌱', accent:'#00796b',
+    lessons:[
+      { title:'تكاثر النباتات ودورات حياتها', topics:[
+        {term:'النمو', en:'Growth', icon:'📈', def:'التغيرات التي تحدث للكائن الحي في الشكل والكتلة والحجم مع مرور الزمن.'},
+        {term:'البصلة', en:'Bulb', icon:'🧅', def:'جزء من النبات ينمو في التربة ويخزّن الغذاء، وتنشأ منه أبصال جديدة.'},
+        {term:'الدرنة', en:'Tuber', icon:'🥔', def:'جزء من النبات ينمو داخل التربة ويخزّن فيه النبات الغذاء، وتحمل براعم ينشأ منها نبات جديد.'},
+        {term:'التكاثر الخضري', en:'Vegetative Reproduction', icon:'🌱', def:'قدرة بعض النباتات على التكاثر وإنتاج نباتات جديدة عن طريق بعض أجزائها، كالدرنات أو الأبصال.'},
+        {term:'مغطاة البذور', en:'Angiosperms', icon:'🌸', def:'نباتات تكوّن أزهارًا، تتحول فيما بعد إلى ثمار تحتوي داخلها على بذور.'},
+        {term:'معراة البذور', en:'Gymnosperms', icon:'🌲', def:'نباتات لا تكوّن أزهارًا، وتوجد بذورها داخل مخاريط.'},
+        {term:'دورة حياة نبات مغطى البذور', en:'Plant Life Cycle', icon:'🌻', def:'تمر النباتات المزهرة بمراحل متتابعة: البذور ← مرحلة الإنبات ← مرحلة النمو ← تكوين الأوراق ← تكوين الأزهار والبذور ← نضج البذور، ثم تتكرر الدورة من جديد.'},
+        {term:'تركيب الزهرة', en:'Flower Structure', icon:'🌺', def:'تتكون الزهرة من: السبلة والبتلة، والسداة (وتضم الخيط والمتك)، والكَربلة (وتضم الميسم والقلم والمبيض)؛ وتُعدّ السداة والكَربلة عضوَي التكاثر في الزهرة.'},
+        {term:'التكاثر بالعقل', en:'Reproduction by Cuttings', icon:'🌹', def:'طريقة من طرائق التكاثر الخضري، تعتمد على فصل جزء من ساق النبات الأصلي (يسمى العقلة) وزراعته في مكان آخر؛ للحصول على نبات جديد يشبه النبات الأصلي.'},
+      ]},
+      { title:'تكاثر الحيوانات ودورات حياتها', topics:[
+        {term:'الحيوانات البالغة', en:'Adult Animals', icon:'🐥', def:'الحيوانات المكتملة النمو، التي تستطيع أن تتكاثر وتنتج أفرادًا جددًا.'},
+        {term:'التكاثر بالولادة', en:'Live Birth', icon:'🐐', def:'طريقة تكاثر تلد فيها الأنثى صغارها أحياء، مثل الماعز.'},
+        {term:'التكاثر بالبيض', en:'Egg-laying', icon:'🐔', def:'طريقة تكاثر تضع فيها الأنثى بيوضًا يفقس منها الصغار، مثل الدجاج.'},
+        {term:'دورة حياة الفراشة', en:'Butterfly Life Cycle', icon:'🦋', def:'تمر الفراشة بأربع مراحل متتابعة: البيضة ← اليرقة ← الشرنقة ← الفراشة مكتملة النمو.'},
+        {term:'دورة حياة الضفدع', en:'Frog Life Cycle', icon:'🐸', def:'يمر الضفدع بأربع مراحل متتابعة: البيوض ← أبو ذنيبة ← الضفدع الصغير ← الضفدع مكتمل النمو.'},
+        {term:'رعاية صغار الحيوانات', en:'Animal Parental Care', icon:'🐦', def:'تحتاج بعض صغار الحيوانات إلى رعاية الأبوين أو أحدهما حتى تكبر، بتوفير الغذاء والمأوى والدفء والحماية كما في الطيور، بينما تترك حيوانات أخرى كالسلاحف بيوضها دون رعاية.'},
+      ]},
+      { title:'العلاقات بين الكائنات الحية', topics:[
+        {term:'الافتراس', en:'Predation', icon:'🦁', def:'علاقة بين كائنين حيين، أحدهما مفترس يتغذى على الآخر، والآخر فريسة.'},
+        {term:'التنافس', en:'Competition', icon:'⚔️', def:'علاقة تنشأ غالبًا بين كائنات حية من النوع نفسه تتنافس مع بعضها من أجل الغذاء والماء والضوء والمأوى.'},
+        {term:'التقايض', en:'Mutualism', icon:'🤝', def:'علاقة تنشأ بين كائنين حيين يستفيد منها كلاهما من الآخر.'},
+        {term:'التعايش', en:'Commensalism', icon:'🐦', def:'علاقة تنشأ بين كائنين حيين يستفيد منها أحدهما، ولا يستفيد الآخر ولا يتضرر.'},
+      ]},
+    ]
+  },
+  { id:3, key:'u3', title:'جسم الإنسان وصحته', icon:'🧠', accent:'#6a1b9a',
+    lessons:[
+      { title:'الحواس الخمس', topics:[
+        {term:'البصر', en:'Sight', icon:'👁️', def:'حاسة نتعرف بها إلى الأشياء من حولنا عن طريق العين.'},
+        {term:'السمع', en:'Hearing', icon:'👂', def:'حاسة نتعرف بها إلى الأصوات من حولنا عن طريق الأذن.'},
+        {term:'الشم', en:'Smell', icon:'👃', def:'حاسة نتعرف بها إلى الروائح عن طريق الأنف.'},
+        {term:'التذوق', en:'Taste', icon:'👅', def:'حاسة نتعرف بها إلى طعم الأشياء عن طريق اللسان.'},
+        {term:'اللمس', en:'Touch', icon:'✋', def:'حاسة نتعرف بها إلى الأشياء عند ملامستها عن طريق الجلد.'},
+        {term:'الدماغ', en:'Brain', icon:'🧠', def:'مركز تحليل المعلومات وحفظها في الجسم، يفسّر الإشارات التي تصله من أعضاء الحس.'},
+      ]},
+      { title:'الصحة الجسمية والنفسية والعاطفية', topics:[
+        {term:'الصحة الجسمية', en:'Physical Health', icon:'💪', def:'تمتع الجسم بسلامة أعضائه جميعها وتآزرها في عملها، وقدرة الجسم على مقاومة الأمراض.'},
+        {term:'الصحة النفسية والعاطفية', en:'Psychological & Emotional Health', icon:'😊', def:'سلامة الشخص من الناحية النفسية والعاطفية، وتكيّفه مع بيئته، وقدرته على ضبط انفعالاته.'},
+      ]},
+      { title:'إثراء وتوسع: التعلم رغم فقد الحواس', topics:[
+        {term:'نظام برايل', en:'Braille System', icon:'🔤', def:'نظام يساعد الأشخاص المكفوفين (فاقدي حاسة الإبصار) على القراءة، باستخدام حاسة اللمس للإحساس بنتوءات بارزة مرتبة على سطح الورقة.'},
+      ]},
+    ]
+  },
+  { id:4, key:'u4', title:'المادة', icon:'⚗️', accent:'#e65100',
+    lessons:[
+      { title:'خصائص المادة', topics:[
+        {term:'الكتلة', en:'Mass', icon:'⚖️', def:'مقدار المادة التي يحويها الجسم.'},
+        {term:'الحجم', en:'Volume', icon:'📦', def:'مقدار ما يشغله الجسم من حيّز.'},
+        {term:'الخصائص الفيزيائية', en:'Physical Properties', icon:'🔍', def:'صفات المادة مثل الشكل (المظهر الخارجي) والحجم والكتلة واللون، التي يمكن ملاحظتها وقياس معظمها.'},
+      ]},
+      { title:'تغيرات المادة', topics:[
+        {term:'التغير الفيزيائي', en:'Physical Change', icon:'🧊', def:'التغيّر الذي يحدث للمادة؛ فيتغيّر حجمها أو شكلها أو حالتها، ولا ينتج عنه مواد جديدة.'},
+        {term:'التغير الكيميائي', en:'Chemical Change', icon:'🔥', def:'التغيّر الذي ينتج منه مواد جديدة تختلف عن المادة الأصلية في خصائصها.'},
+      ]},
+      { title:'إثراء وتوسع: أعمل كالعلماء', topics:[
+        {term:'التخمر (مثال على التغير الكيميائي)', en:'Fermentation', icon:'🧪', def:'تفاعل كيميائي يحدث عند خلط الخميرة بالماء الدافئ والسكر، فتتكوّن فقاعات غاز؛ وهو مثال على التغير الكيميائي الذي تنتج فيه مادة جديدة مختلفة عن المواد الأصلية.'},
+      ]},
+    ]
+  },
+];
+
+/* ================= APP LOGIC ================= */
+const unitsGrid = document.getElementById('unitsGrid');
+const lessonsList = document.getElementById('lessonsList');
+const topicsGrid = document.getElementById('topicsGrid');
+const screens = {
+  home: document.getElementById('screen-home'),
+  unit: document.getElementById('screen-unit'),
+  lesson: document.getElementById('screen-lesson'),
+  search: document.getElementById('screen-search'),
+  quiz: document.getElementById('screen-quiz'),
+};
+const headerTitle = document.getElementById('headerTitle');
+const headerSub = document.getElementById('headerSub');
+const backBtn = document.getElementById('backBtn');
+
+let state = { unit:null, lesson:null };
+
+function renderHome(){
+  unitsGrid.innerHTML = DATA.map(u => `
+    <div class="unit-card ${u.key}" data-id="${u.id}">
+      <span class="num">الوحدة ${arNum(u.id)}</span>
+      <span class="icon3d">${u.icon}</span>
+      <h3>${u.title}</h3>
+      <span class="count">${u.lessons.length} دروس</span>
+    </div>
+  `).join('');
+  [...unitsGrid.querySelectorAll('.unit-card')].forEach(el=>{
+    el.addEventListener('click', ()=> openUnit(parseInt(el.dataset.id)));
+  });
+}
+
+function arNum(n){ return ['', 'الأولى','الثانية','الثالثة','الرابعة','الخامسة'][n] || n; }
+
+function openUnit(id){
+  state.unit = DATA.find(u=>u.id===id);
+  headerTitle.textContent = state.unit.title;
+  headerSub.textContent = 'اختر درسًا لاستكشاف مفاهيمه';
+  backBtn.classList.add('show');
+  lessonsList.innerHTML = state.unit.lessons.map((l,i)=>`
+    <div class="lesson-row" style="--accent:${state.unit.accent}" data-i="${i}">
+      <div class="lnum">${i+1}</div>
+      <div class="ltext"><h4>${l.title}</h4><span>${l.topics.length} مفاهيم تفاعلية</span></div>
+      <div class="arrow">‹</div>
+    </div>
+  `).join('');
+  [...lessonsList.querySelectorAll('.lesson-row')].forEach(el=>{
+    el.addEventListener('click', ()=> openLesson(parseInt(el.dataset.i)));
+  });
+  showScreen('unit');
+}
+
+function topicCardHTML(t, accent, idx){
+  return `
+    <div class="flip-card" style="--accent:${accent}" data-i="${idx}">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="badge3d">${t.icon}</div>
+          <h5>${t.term}</h5>
+          <div class="en">${t.en||''}</div>
+          <div class="tap-hint">اضغط لعرض التعريف ↺</div>
+        </div>
+        <div class="flip-face flip-back">
+          <h5>${t.term} ${t.en? '· '+t.en:''}</h5>
+          <p>${t.def}</p>
+        </div>
+      </div>
+    </div>`;
+}
+function bindFlipCards(container){
+  [...container.querySelectorAll('.flip-card')].forEach(el=>{
+    el.addEventListener('click', ()=> el.classList.toggle('flipped'));
+  });
+}
+
+function openLesson(i){
+  state.lesson = state.unit.lessons[i];
+  headerTitle.textContent = state.lesson.title;
+  headerSub.textContent = state.unit.title;
+  backBtn.classList.add('show');
+  topicsGrid.innerHTML = state.lesson.topics.map((t,idx)=>topicCardHTML(t, state.unit.accent, idx)).join('');
+  bindFlipCards(topicsGrid);
+  showScreen('lesson');
+}
+
+/* ===== Global search across all units/lessons ===== */
+function allTopicsFlat(){
+  const list=[];
+  DATA.forEach(u=> u.lessons.forEach(l=> l.topics.forEach(t=> list.push({...t, accent:u.accent, unitTitle:u.title, lessonTitle:l.title}))));
+  return list;
+}
+const ALL_TOPICS = allTopicsFlat();
+
+const searchInput = document.getElementById('searchInput');
+const searchGrid = document.getElementById('searchGrid');
+const searchEmpty = document.getElementById('searchEmpty');
+
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim();
+  if(!q){ return; }
+  runSearch(q);
+});
+searchInput.addEventListener('focus', ()=>{ if(searchInput.value.trim()) runSearch(searchInput.value.trim()); });
+
+function runSearch(q){
+  const norm = s => (s||'').toString().toLowerCase();
+  const nq = norm(q);
+  const results = ALL_TOPICS.filter(t => norm(t.term).includes(nq) || norm(t.en).includes(nq) || norm(t.def).includes(nq));
+  headerTitle.textContent = 'نتائج البحث';
+  headerSub.textContent = `"${q}" — ${results.length} نتيجة`;
+  backBtn.classList.add('show');
+  state.fromSearch = true;
+  if(results.length===0){
+    searchGrid.innerHTML=''; searchEmpty.style.display='block';
+  } else {
+    searchEmpty.style.display='none';
+    searchGrid.innerHTML = results.map((t,idx)=>topicCardHTML(t, t.accent, idx)).join('');
+    bindFlipCards(searchGrid);
+  }
+  showScreen('search');
+}
+
+/* ===== Quick quiz (per lesson) ===== */
+const quizBtn = document.getElementById('quizBtn');
+const quizWrap = document.getElementById('quizWrap');
+let quizState = {questions:[], idx:0, score:0};
+
+quizBtn.addEventListener('click', ()=>{
+  const topics = state.lesson.topics;
+  if(topics.length < 2){ return; }
+  const pool = topics.length >= 4 ? topics : (() => {
+    // borrow distractors from the whole unit if lesson is short
+    const unitTopics = state.unit.lessons.flatMap(l=>l.topics);
+    return unitTopics.length >= 4 ? unitTopics : ALL_TOPICS;
+  })();
+  quizState.questions = shuffle(topics.slice()).map(t => buildQuestion(t, pool));
+  quizState.idx = 0; quizState.score = 0;
+  headerTitle.textContent = 'اختبار سريع';
+  headerSub.textContent = state.lesson.title;
+  backBtn.classList.add('show');
+  showScreen('quiz');
+  renderQuizQuestion();
+});
+
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function buildQuestion(correctTopic, pool){
+  const distractorsPool = shuffle(pool.filter(t=>t.term!==correctTopic.term));
+  const distractors = distractorsPool.slice(0,3).map(t=>t.def);
+  const options = shuffle([correctTopic.def, ...distractors]);
+  return { icon:correctTopic.icon, term:correctTopic.term, en:correctTopic.en, correct:correctTopic.def, options };
+}
+
+function renderQuizQuestion(){
+  if(quizState.idx >= quizState.questions.length){ renderQuizResult(); return; }
+  const q = quizState.questions[quizState.idx];
+  quizWrap.innerHTML = `
+    <div class="quiz-progress">سؤال ${quizState.idx+1} من ${quizState.questions.length}</div>
+    <div class="quiz-card">
+      <span class="qicon">${q.icon}</span>
+      <h4>ما تعريف مفهوم: <strong>${q.term}</strong>${q.en? ' ('+q.en+')':''}؟</h4>
+      <div class="quiz-options">
+        ${q.options.map((opt,i)=>`<button class="quiz-opt" data-i="${i}">${opt}</button>`).join('')}
+      </div>
+      <button class="quiz-next" id="quizNext">${quizState.idx+1 < quizState.questions.length ? 'السؤال التالي ←' : 'عرض النتيجة ←'}</button>
+    </div>`;
+  const opts = [...quizWrap.querySelectorAll('.quiz-opt')];
+  const nextBtn = document.getElementById('quizNext');
+  opts.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      opts.forEach(b=>b.disabled=true);
+      const chosen = btn.textContent;
+      if(chosen === q.correct){ btn.classList.add('correct'); quizState.score++; }
+      else{
+        btn.classList.add('wrong');
+        opts.find(b=>b.textContent===q.correct).classList.add('correct');
+      }
+      nextBtn.style.display='inline-block';
+    });
+  });
+  nextBtn.addEventListener('click', ()=>{ quizState.idx++; renderQuizQuestion(); });
+}
+
+function renderQuizResult(){
+  const total = quizState.questions.length;
+  const pct = Math.round((quizState.score/total)*100);
+  const msg = pct>=80 ? 'ممتاز! 🌟' : pct>=50 ? 'جيد، واصلي المراجعة 👍' : 'حاولي مرة أخرى وراجعي البطاقات 💪';
+  quizWrap.innerHTML = `
+    <div class="quiz-result">
+      <span style="font-size:54px;">🏆</span>
+      <div class="score">${quizState.score} / ${total}</div>
+      <p>${msg}</p>
+      <button class="again" id="quizAgain">إعادة الاختبار</button>
+    </div>`;
+  document.getElementById('quizAgain').addEventListener('click', ()=> quizBtn.click());
+}
+
+function showScreen(name){
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+backBtn.addEventListener('click', ()=>{
+  if(screens.quiz.classList.contains('active')){
+    headerTitle.textContent = state.lesson.title;
+    headerSub.textContent = state.unit.title;
+    showScreen('lesson');
+  } else if(screens.search.classList.contains('active')){
+    headerTitle.textContent = 'مختبر العلوم ثلاثي الأبعاد';
+    headerSub.textContent = 'الصف الرابع • الفصل الدراسي الأول';
+    backBtn.classList.remove('show');
+    searchInput.value='';
+    showScreen('home');
+  } else if(screens.lesson.classList.contains('active')){
+    headerTitle.textContent = state.unit.title;
+    headerSub.textContent = 'اختر درسًا لاستكشاف مفاهيمه';
+    showScreen('unit');
+  } else {
+    headerTitle.textContent = 'مختبر العلوم ثلاثي الأبعاد';
+    headerSub.textContent = 'الصف الرابع • الفصل الدراسي الأول';
+    backBtn.classList.remove('show');
+    showScreen('home');
+  }
+});
+
+renderHome();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

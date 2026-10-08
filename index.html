@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مختبر العلوم ثلاثي الأبعاد - الصف الرابع</title>
+<meta name="description" content="مختبر علوم تفاعلي ثلاثي الأبعاد لمنهاج الصف الرابع - الفصلان الأول والثاني">
+<meta name="theme-color" content="#1b5e20">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مختبر العلوم">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-dark:#1b5e20;
+    --green:#2e7d32;
+    --green-light:#66bb6a;
+    --gold:#f2b705;
+    --paper:#fbf9f2;
+    --ink:#20321f;
+    --radius:20px;
+    --shadow: 0 10px 30px rgba(0,0,0,.18);
+    --u1:#2e7d32; --u1b:#66bb6a;
+    --u2:#00796b; --u2b:#4db6ac;
+    --u3:#6a1b9a; --u3b:#ab47bc;
+    --u4:#e65100; --u4b:#ff9800;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){ --paper:#14201a; --ink:#eef3ea; }
+  }
+  :root[data-theme="dark"]{ --paper:#14201a; --ink:#eef3ea; }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0; font-family:'Tajawal','Cairo',sans-serif; background:
+      radial-gradient(1200px 600px at 100% -10%, rgba(102,187,106,.25), transparent 60%),
+      radial-gradient(1000px 500px at -10% 110%, rgba(242,183,5,.18), transparent 60%),
+      var(--paper);
+    color:var(--ink);
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    overflow-x:hidden;
+  }
+  .app{max-width:1000px;margin:0 auto;padding:14px 16px 40px;}
+
+  /* ===== Header ===== */
+  header.top{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:30;
+    display:flex; align-items:center; gap:10px;
+    background:linear-gradient(135deg,var(--green-dark),var(--green));
+    color:#fff; padding:14px 16px; border-radius:0 0 18px 18px;
+    box-shadow:var(--shadow);
+    margin:0 -16px 18px;
+  }
+  header.top .back-btn{
+    width:38px;height:38px;border-radius:50%;border:none;
+    background:rgba(255,255,255,.18); color:#fff; font-size:18px; cursor:pointer;
+    display:none; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  header.top .back-btn.show{display:flex;}
+  header.top .titles{flex:1; min-width:0;}
+  header.top h1{font-size:20px; margin:0; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  header.top p{font-size:14px; margin:2px 0 0; opacity:.85;}
+  header.top .badge{
+    background:var(--gold); color:#3a2a00; font-weight:800; font-size:12px;
+    padding:5px 10px; border-radius:999px; flex-shrink:0;
+  }
+
+  .screen{display:none; animation:fadeUp .35s ease;}
+  .screen.active{display:block;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ===== Home ===== */
+  .welcome{
+    text-align:center; padding:10px 6px 22px;
+  }
+  .welcome .orb{
+    width:120px;height:120px;margin:6px auto 10px; position:relative;
+    perspective:700px;
+  }
+  .welcome .orb .sphere{
+    width:100%;height:100%;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #a5d6a7, var(--green) 55%, var(--green-dark) 100%);
+    box-shadow:0 18px 40px rgba(27,94,32,.45), inset -10px -14px 30px rgba(0,0,0,.25), inset 10px 10px 20px rgba(255,255,255,.25);
+    display:flex;align-items:center;justify-content:center;font-size:52px;
+    animation:spin 7s linear infinite;
+  }
+  @keyframes spin{ from{transform:rotateY(0deg);} to{transform:rotateY(360deg);} }
+  .welcome h2{font-size:26px; font-weight:900; margin:4px 0 2px; color:var(--green-dark);}
+  .welcome p{font-size:17px; opacity:.75; margin:0 0 4px;}
+
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (min-width:640px){ .grid{grid-template-columns:repeat(2,1fr);} }
+
+  .unit-card{
+    position:relative; border-radius:var(--radius); padding:18px 14px 16px;
+    color:#fff; cursor:pointer; overflow:hidden; min-height:148px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    box-shadow:var(--shadow); transform:perspective(600px) rotateX(0deg);
+    transition:transform .25s ease, box-shadow .25s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .unit-card:active{transform:perspective(600px) rotateX(6deg) scale(.97);}
+  .unit-card .num{
+    position:absolute; top:10px; inset-inline-start:12px;
+    background:rgba(255,255,255,.22); font-weight:900; font-size:14px;
+    padding:3px 10px; border-radius:999px;
+  }
+  .unit-card .icon3d{
+    position:absolute; top:6px; inset-inline-end:8px; font-size:54px;
+    filter:drop-shadow(0 10px 10px rgba(0,0,0,.25));
+    animation:float 3.5s ease-in-out infinite;
+  }
+  @keyframes float{ 0%,100%{transform:translateY(0) rotate(-4deg);} 50%{transform:translateY(-8px) rotate(4deg);} }
+  .unit-card h3{font-size:19px; margin:0 0 2px; font-weight:800; line-height:1.35;}
+  .unit-card span.count{font-size:14px; opacity:.9;}
+
+  .unit-card{background:linear-gradient(145deg,var(--c1,#2e7d32),var(--c2,#66bb6a));}
+
+  /* ===== Semester tabs ===== */
+  .sem-tabs{display:flex; gap:8px; max-width:420px; margin:0 auto 18px; background:rgba(0,0,0,.06); padding:5px; border-radius:999px;}
+  .sem-tab{
+    flex:1; border:none; background:transparent; padding:9px 10px; border-radius:999px; cursor:pointer;
+    font-family:inherit; font-weight:800; font-size:15px; color:var(--ink); opacity:.55;
+  }
+  .sem-tab.active{background:var(--green); color:#fff; opacity:1; box-shadow:0 6px 14px rgba(0,0,0,.2);}
+
+  /* ===== Lessons list ===== */
+  .lesson-row{
+    display:flex; align-items:center; gap:14px; background:#fff; color:var(--ink);
+    border-radius:16px; padding:14px; margin-bottom:12px; box-shadow:var(--shadow);
+    cursor:pointer; border-inline-start:6px solid var(--accent,#2e7d32);
+  }
+  :root[data-theme="dark"] .lesson-row, @media (prefers-color-scheme: dark){ .lesson-row{ } }
+  .lesson-row .lnum{
+    width:40px;height:40px;border-radius:12px; flex-shrink:0;
+    background:var(--accent,#2e7d32); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-weight:900; font-size:16px; box-shadow:0 6px 14px rgba(0,0,0,.25);
+  }
+  .lesson-row .ltext{flex:1;}
+  .lesson-row h4{margin:0 0 2px; font-size:19px; font-weight:800;}
+  .lesson-row span{font-size:14.5px; opacity:.65;}
+  .lesson-row .arrow{font-size:18px; opacity:.4;}
+
+  /* ===== Topic cards (flip, 3D) ===== */
+  .topic-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:14px;}
+  @media (min-width:560px){ .topic-grid{grid-template-columns:repeat(3,1fr);} }
+
+  .flip-card{ perspective:1000px; height:240px; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  .flip-inner{
+    position:relative; width:100%; height:100%; transition:transform .6s cubic-bezier(.2,.9,.3,1);
+    transform-style:preserve-3d;
+  }
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{
+    position:absolute; inset:0; backface-visibility:hidden; border-radius:16px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:12px; text-align:center; box-shadow:var(--shadow);
+  }
+  .flip-front{
+    background:linear-gradient(160deg,#fff,#f1f7f0);
+    border:2px solid var(--accent,#2e7d32);
+  }
+  .flip-front .badge3d{
+    width:64px;height:64px;border-radius:50%;
+    background:radial-gradient(circle at 30% 28%, #ffffff, var(--accent,#2e7d32) 65%);
+    display:flex;align-items:center;justify-content:center; font-size:32px;
+    box-shadow:0 10px 18px rgba(0,0,0,.25), inset -6px -8px 14px rgba(0,0,0,.2), inset 6px 6px 10px rgba(255,255,255,.4);
+    margin-bottom:8px; animation:spin 6s linear infinite;
+  }
+  .flip-front h5{margin:0; font-size:18px; line-height:1.4; font-weight:800; color:var(--ink);}
+  .flip-front .en{font-size:13px; opacity:.55; margin-top:2px;}
+  .flip-front .tap-hint{position:absolute; bottom:7px; font-size:12px; opacity:.5;}
+  .flip-back{
+    background:var(--accent,#2e7d32); color:#fff; transform:rotateY(180deg);
+  }
+  .flip-back p{font-size:16px; line-height:1.65; margin:0;}
+  .flip-back{overflow:auto;}
+  .flip-back h5{font-size:16px; margin:0 0 6px; font-weight:800; border-bottom:1px solid rgba(255,255,255,.4); padding-bottom:4px;}
+
+  footer.note{text-align:center; font-size:13px; opacity:.45; margin-top:26px; line-height:1.8;}
+
+
+  /* ===== Labs & games ===== */
+  .idea-box{background:#fff8e1; border-inline-start:6px solid var(--gold); border-radius:14px; padding:14px 16px; margin:0 auto 16px; max-width:620px; font-size:18px; line-height:1.75; box-shadow:var(--shadow); color:#3a2a00;}
+  .idea-box b{display:block; color:#8a5a00; font-size:15px; margin-bottom:2px;}
+  .lab-title{text-align:center; margin:0 0 6px; font-size:21px; font-weight:800;}
+  .lab-tabs{display:flex; gap:8px; margin:0 auto 14px; max-width:560px; flex-wrap:wrap;}
+  .lab-tab{flex:1; min-width:140px; border:2px solid var(--accent,#2e7d32); background:#fff; color:var(--accent,#2e7d32); border-radius:999px; padding:11px 12px; font-family:inherit; font-weight:800; font-size:16px; cursor:pointer;}
+  .lab-tab.active{background:var(--accent,#2e7d32); color:#fff;}
+  .lab-stage{position:relative; max-width:560px; margin:0 auto; height:270px; border-radius:20px; overflow:hidden; box-shadow:var(--shadow); background:linear-gradient(#cfe9ff,#eaf6ff);}
+  .lab-controls{max-width:560px; margin:16px auto 0; background:#fff; border-radius:16px; padding:14px 18px; box-shadow:var(--shadow); font-size:17px; color:var(--ink);}
+  .lab-controls label{display:block; font-weight:800; margin:4px 0; font-size:17px;}
+  .lab-controls input[type=range]{width:100%; height:36px; accent-color:var(--accent,#2e7d32);}
+  .lab-note{max-width:560px; margin:14px auto 0; background:#fff; border-radius:16px; padding:14px 18px; font-size:18px; line-height:1.8; box-shadow:var(--shadow); border-inline-start:6px solid var(--accent,#2e7d32); color:var(--ink);}
+  .lab-btns{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;}
+  .lab-btn{border:none; border-radius:12px; padding:12px 16px; font-family:inherit; font-weight:800; font-size:16.5px; background:var(--accent,#2e7d32); color:#fff; cursor:pointer;}
+  .lab-btn.alt{background:#fff; color:var(--accent,#2e7d32); border:2px solid var(--accent,#2e7d32);}
+  .lab-btn.sel{outline:4px solid var(--gold);}
+  .lab-btn:active{transform:scale(.97);}
+  .mat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px;}
+  .mat-btn{border:2px solid var(--accent,#2e7d32); background:#fff; border-radius:12px; padding:8px 4px; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer; color:var(--ink);}
+  .mat-btn .e{display:block; font-size:32px; line-height:1.2;}
+  .mat-btn.sel{background:var(--gold);}
+  .flow{fill:none; stroke:#ffab00; stroke-width:5; stroke-dasharray:2 15; stroke-linecap:round; animation:dashmove .7s linear infinite;}
+  @keyframes dashmove{to{stroke-dashoffset:-34;}}
+  .sort-prog{max-width:560px; margin:0 auto 10px; text-align:center; font-size:17px; font-weight:800;}
+  .sort-card{max-width:560px; margin:0 auto; background:#fff; border-radius:20px; padding:22px 18px; box-shadow:var(--shadow); text-align:center; color:var(--ink);}
+  .sort-emoji{font-size:76px; line-height:1.1; animation:float 3.5s ease-in-out infinite;}
+  .sort-q{font-size:23px; font-weight:800; margin:8px 0 16px; line-height:1.5;}
+  .sort-score{font-size:52px; font-weight:900; color:var(--accent,#2e7d32);}
+  .sort-btns{display:grid; gap:10px;}
+  .sort-btn{border:2px solid var(--accent,#2e7d32); background:#fff; color:var(--ink); border-radius:14px; padding:12px 8px; font-family:inherit; font-size:18px; font-weight:800; cursor:pointer;}
+  .sort-btn span{display:block; font-size:30px;}
+  .sort-btn.ok{background:#c8e6c9; border-color:#2e7d32;}
+  .sort-btn.bad{background:#ffcdd2; border-color:#c62828;}
+  .sort-fb{display:none; margin-top:14px; padding:12px 14px; border-radius:12px; font-size:18px; line-height:1.7; text-align:right;}
+  .sort-fb.show{display:block;}
+  .sort-fb.ok{background:#e8f5e9;} .sort-fb.bad{background:#ffebee;}
+  .ord-slots{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; max-width:620px; margin:0 auto;}
+  .ord-slot{min-width:92px; flex:1; background:#fff; border:2px dashed var(--accent,#2e7d32); border-radius:14px; padding:8px 4px; text-align:center; font-size:15px; min-height:104px;}
+  .ord-slot b{display:block; color:var(--accent,#2e7d32); font-size:18px;}
+  .ord-slot.fill{border-style:solid; background:#f1f8e9;}
+  .ord-slot span{display:block; font-size:34px;}
+  .ord-slot small{font-size:14px; font-weight:700;}
+  .ord-pool{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; max-width:560px; margin:12px auto 0;}
+  .ord-chip{border:2px solid var(--accent,#2e7d32); background:#fff; border-radius:14px; padding:12px 8px; font-family:inherit; font-size:17px; font-weight:800; cursor:pointer; color:var(--ink);}
+  .ord-chip span{display:block; font-size:34px;}
+  .shake{animation:shk .4s;}
+  @keyframes shk{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+
+  /* ===== Cycle preview card (in topic grid) ===== */
+  .cycle-card{
+    grid-column:1 / -1; position:relative; border-radius:16px; cursor:pointer;
+    background:linear-gradient(135deg,var(--accent,#2e7d32),rgba(0,0,0,.15));
+    color:#fff; padding:16px; box-shadow:var(--shadow); overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .cycle-card h5{margin:6px 0 2px; font-size:19px; font-weight:800;}
+  .cycle-card .en{font-size:13px; opacity:.8; margin-bottom:10px;}
+  .cycle-card .preview-row{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .cycle-card .preview-row .pbadge{
+    width:38px;height:38px;border-radius:50%; background:rgba(255,255,255,.18);
+    display:flex;align-items:center;justify-content:center; font-size:22px;
+    animation:float 3.5s ease-in-out infinite;
+  }
+  .cycle-card .preview-row .parrow{opacity:.7; font-size:14px;}
+  .cycle-card .explore{position:absolute; left:14px; bottom:12px; font-size:13px; opacity:.85;}
+  .cycle-card .badge-3d-tag{
+    position:absolute; top:10px; left:12px; background:rgba(255,255,255,.22); font-size:13px;
+    padding:3px 9px; border-radius:999px; font-weight:800;
+  }
+
+  /* ===== Cycle full screen (3D wheel) ===== */
+  .cycle-top{text-align:center; margin-bottom:6px;}
+  .cycle-top h3{margin:0 0 2px; font-size:21px; font-weight:800;}
+  .cycle-top p{margin:0; font-size:15px; opacity:.6;}
+  .cycle-wheel-wrap{
+    width:min(320px,86vw); height:min(320px,86vw); margin:22px auto 10px; position:relative;
+    perspective:900px;
+  }
+  .cycle-ring{
+    position:absolute; inset:10%; border-radius:50%;
+    border:2px dashed var(--accent,#2e7d32); opacity:.35;
+  }
+  .cycle-hub{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:34%; height:34%; border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #fff, var(--accent,#2e7d32) 70%);
+    display:flex; align-items:center; justify-content:center; font-size:15vw; max-font-size:46px;
+    box-shadow:0 14px 26px rgba(0,0,0,.3), inset -8px -10px 18px rgba(0,0,0,.25), inset 8px 8px 14px rgba(255,255,255,.3);
+    transition:transform .4s ease; font-size:42px;
+  }
+  .cycle-hub.pulse{ animation:pulse .5s ease; }
+  @keyframes pulse{ 0%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.15);} 100%{transform:translate(-50%,-50%) scale(1);} }
+  .cycle-node{
+    position:absolute; width:58px; height:58px; border-radius:50%; margin:-29px 0 0 -29px;
+    background:#fff; border:3px solid var(--accent,#2e7d32); display:flex; align-items:center; justify-content:center;
+    font-size:24px; cursor:pointer; box-shadow:0 8px 16px rgba(0,0,0,.2); transition:transform .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .cycle-node:active{transform:scale(.92);}
+  .cycle-node.active{
+    background:var(--accent,#2e7d32); color:#fff; transform:scale(1.18);
+    box-shadow:0 10px 22px rgba(0,0,0,.35);
+  }
+  .cycle-node .snum{
+    position:absolute; top:-6px; inset-inline-end:-6px; width:18px;height:18px;border-radius:50%;
+    background:var(--gold); color:#3a2a00; font-size:10px; font-weight:900; display:flex; align-items:center; justify-content:center;
+  }
+  .cycle-info{
+    max-width:460px; margin:18px auto 0; background:#fff; border-radius:16px; padding:16px 18px;
+    box-shadow:var(--shadow); border-inline-start:6px solid var(--accent,#2e7d32); min-height:90px;
+    animation:fadeUp .3s ease;
+  }
+  .cycle-info h4{margin:0 0 2px; font-size:21px; font-weight:800; color:var(--ink);}
+  .cycle-info .en{font-size:14px; opacity:.55; margin-bottom:8px;}
+  .cycle-info p{margin:0; font-size:17px; line-height:1.7; color:var(--ink);}
+  .cycle-nav{display:flex; justify-content:center; gap:10px; margin-top:14px;}
+  .cycle-nav button{
+    border:none; border-radius:999px; padding:9px 18px; font-family:inherit; font-weight:800; font-size:15px;
+    background:var(--accent,#2e7d32); color:#fff; cursor:pointer;
+  }
+  .cycle-nav button:active{transform:scale(.96);}
+
+  /* ===== Search ===== */
+  .search-wrap{
+    position:relative; max-width:420px; margin:4px auto 20px;
+  }
+  .search-wrap input{
+    width:100%; padding:12px 42px 12px 16px; border-radius:999px; border:2px solid rgba(46,125,50,.25);
+    background:#fff; color:var(--ink); font-family:inherit; font-size:17px; outline:none;
+    box-shadow:0 6px 16px rgba(0,0,0,.08);
+  }
+  .search-wrap input:focus{border-color:var(--green);}
+  .search-icon{position:absolute; inset-inline-end:14px; top:50%; transform:translateY(-50%); opacity:.5; font-size:15px;}
+
+  /* ===== Quiz button ===== */
+  .quiz-btn{
+    display:block; width:100%; max-width:420px; margin:0 auto 18px; padding:13px 16px;
+    border:none; border-radius:14px; cursor:pointer; font-family:inherit; font-weight:800; font-size:17px;
+    background:linear-gradient(135deg,var(--gold),#ffd54f); color:#3a2a00; box-shadow:var(--shadow);
+  }
+  .quiz-btn:active{transform:scale(.98);}
+
+  /* ===== Quiz ===== */
+  .quiz-wrap{max-width:480px; margin:0 auto;}
+  .quiz-progress{font-size:15px; opacity:.6; text-align:center; margin-bottom:10px;}
+  .quiz-card{background:#fff; border-radius:18px; padding:20px 18px; box-shadow:var(--shadow); text-align:center;}
+  .quiz-card .qicon{font-size:40px; margin-bottom:8px; display:block;}
+  .quiz-card h4{font-size:19px; line-height:1.6; margin:0 0 16px;}
+  .quiz-options{display:flex; flex-direction:column; gap:10px;}
+  .quiz-opt{
+    padding:12px 14px; border-radius:12px; border:2px solid rgba(46,125,50,.2); background:#fbf9f2;
+    cursor:pointer; font-family:inherit; font-size:16px; text-align:right; color:var(--ink);
+  }
+  .quiz-opt.correct{background:#c8e6c9; border-color:#2e7d32; font-weight:800;}
+  .quiz-opt.wrong{background:#ffcdd2; border-color:#c62828;}
+  .quiz-opt[disabled]{pointer-events:none;}
+  .quiz-next{
+    margin-top:16px; padding:11px 20px; border:none; border-radius:999px; background:var(--green);
+    color:#fff; font-weight:800; font-family:inherit; cursor:pointer; display:none;
+  }
+  .quiz-result{text-align:center; padding:30px 10px;}
+  .quiz-result .score{font-size:46px; font-weight:900; color:var(--green-dark); margin:10px 0;}
+  .quiz-result .again{
+    margin-top:18px; padding:12px 24px; border:none; border-radius:999px; background:var(--gold);
+    color:#3a2a00; font-weight:800; font-family:inherit; cursor:pointer;
+  }
+
+  ::selection{background:var(--gold); color:#000;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <button class="back-btn" id="backBtn" aria-label="رجوع">➜</button>
+    <div class="titles">
+      <h1 id="headerTitle">مختبر العلوم ثلاثي الأبعاد</h1>
+      <p id="headerSub">الصف الرابع • الفصلان الدراسيان</p>
+    </div>
+    <div class="badge">4</div>
+  </header>
+
+  <!-- HOME -->
+  <section class="screen active" id="screen-home">
+    <div class="welcome">
+      <div class="orb"><div class="sphere">🔬</div></div>
+      <h2>أهلًا بك في المختبر!</h2>
+      <p>اختر وحدة لتبدأ الاستكشاف ثلاثي الأبعاد</p>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔎</span>
+      <input id="searchInput" type="search" placeholder="ابحثي عن مفهوم... مثل: الخلية">
+    </div>
+    <div class="sem-tabs" id="semTabs">
+      <button class="sem-tab" data-sem="1">الفصل الأول</button>
+      <button class="sem-tab" data-sem="2">الفصل الثاني</button>
+    </div>
+    <div class="grid" id="unitsGrid"></div>
+    <footer class="note">
+      مبني على كتاب الطالب ودليل المعلم لمادة العلوم - الصف الرابع - الفصلان الأول والثاني<br>
+      المركز الوطني لتطوير المناهج والتقويم
+    </footer>
+  </section>
+
+  <!-- LESSONS LIST -->
+  <section class="screen" id="screen-unit">
+    <div id="lessonsList"></div>
+  </section>
+
+  <!-- TOPIC CARDS -->
+  <section class="screen" id="screen-lesson">
+    <div class="idea-box" id="ideaBox" style="display:none"></div>
+    <button class="quiz-btn" id="quizBtn">🧠 اختبار سريع على مفاهيم هذا الدرس</button>
+    <div class="topic-grid" id="topicsGrid"></div>
+  </section>
+
+  <!-- SEARCH RESULTS -->
+  <section class="screen" id="screen-search">
+    <div class="topic-grid" id="searchGrid"></div>
+    <p id="searchEmpty" style="display:none;text-align:center;opacity:.6;margin-top:30px;">لا توجد نتائج مطابقة، جربي كلمة أخرى.</p>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="screen" id="screen-quiz">
+    <div class="quiz-wrap" id="quizWrap"></div>
+  </section>
+
+  <!-- LABS & GAMES -->
+  <section class="screen" id="screen-lab">
+    <h3 class="lab-title" id="labTitle"></h3>
+    <div id="labBody"></div>
+  </section>
+
+  <!-- LIFE CYCLE 3D WHEEL -->
+  <section class="screen" id="screen-cycle">
+    <div class="cycle-top">
+      <h3 id="cycleTitle"></h3>
+      <p id="cycleSub">اضغطي على أي مرحلة لعرض معلوماتها</p>
+    </div>
+    <div class="cycle-wheel-wrap" id="cycleWheel">
+      <div class="cycle-ring"></div>
+      <div class="cycle-hub" id="cycleHub">🔬</div>
+    </div>
+    <div class="cycle-info" id="cycleInfo"></div>
+    <div class="cycle-nav">
+      <button id="cyclePrev">‹ السابقة</button>
+      <button id="cycleNext">التالية ›</button>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ================= DATA: مبني على كتاب الطالب ودليل المعلم - علوم - صف رابع - فصل أول ================= */
+const DATA1 = [
+  { id:1, key:'u1', title:'تصنيف الكائنات الحية', icon:'🧬', accent:'#2e7d32',
+    lessons:[
+      { title:'التصنيف', topics:[
+        {term:'الخلية', en:'Cell', icon:'🔬', def:'وحدة البناء والوظيفة لجميع الكائنات الحية.'},
+        {term:'وحيدة الخلية', en:'Unicellular', icon:'🦠', def:'كائنات حية بسيطة التركيب، تتكون أجسامها من خلية واحدة فقط.'},
+        {term:'عديدة الخلايا', en:'Multicellular', icon:'🧅', def:'كائنات حية معقدة التركيب، تتكون أجسامها من عدة خلايا.'},
+        {term:'المملكة', en:'Kingdom', icon:'👑', def:'مجموعة تشترك جميع أفرادها في صفات أساسية.'},
+        {term:'التصنيف', en:'Classification', icon:'🗂️', def:'وضع الكائنات الحية في مجموعات بناء على أوجه التشابه والاختلاف بينها؛ لتسهيل دراستها.'},
+        {term:'مفتاح التصنيف', en:'Classification Key', icon:'🔑', def:'أداة تستخدم للتعرف إلى الكائنات الحية عن طريق خصائصها، بتوجيه أسئلة مباشرة تكون الإجابة عنها بـ (نعم) أو (لا).'},
+      ]},
+      { title:'ممالك الكائنات الحية', topics:[
+        {term:'مملكة البدائيات والبكتيريا', en:'Monera', icon:'🦠', def:'أصغر الكائنات الحية وأبسطها، تتكون من خلية واحدة، بعضها مفيد (مثل بكتيريا الهضم) وبعضها ضار يسبب الأمراض.'},
+        {term:'مملكة الطلائعيات', en:'Protista', icon:'💧', def:'كائنات حية بسيطة، منها ما يتكون من خلية واحدة كالبراميسيوم، ومنها الطحالب المفيدة، ومنها ما يسبب أمراضًا كالملاريا.'},
+        {term:'مملكة الفطريات', en:'Fungi', icon:'🍄', def:'كائنات حية لا تصنع غذاءها بنفسها، وتعتمد في غذائها على كائنات حية أخرى، مثل فطر المشروم (مفيد) وفطر عفن الخبز (ضار).'},
+        {term:'مملكة النباتات', en:'Plants Kingdom', icon:'🌿', def:'كائنات حية عديدة الخلايا تصنع غذاءها بنفسها.'},
+        {term:'مملكة الحيوانات', en:'Animals Kingdom', icon:'🐾', def:'كائنات حية عديدة الخلايا، تعتمد في غذائها على مخلوقات أخرى.'},
+      ]},
+      { title:'إثراء وتوسع: خطر الانقراض', topics:[
+        {term:'الكائنات المهددة بالانقراض', en:'Endangered Species', icon:'🐢', def:'كائنات حية تعجز عن التكيف مع التغيرات التي تطرأ على بيئتها، فتتناقص أعدادها بشدة، وتصبح مهددة بالاختفاء التام من منطقة ما؛ مثل بعض أنواع السلاحف البحرية.'},
+      ]},
+    ]
+  },
+  { id:2, key:'u2', title:'دورات حياة الكائنات الحية والعلاقات بينها', icon:'🌱', accent:'#00796b',
+    lessons:[
+      { title:'تكاثر النباتات ودورات حياتها', topics:[
+        {term:'النمو', en:'Growth', icon:'📈', def:'التغيرات التي تحدث للكائن الحي في الشكل والكتلة والحجم مع مرور الزمن.'},
+        {term:'البصلة', en:'Bulb', icon:'🧅', def:'جزء من النبات ينمو في التربة ويخزّن الغذاء، وتنشأ منه أبصال جديدة.'},
+        {term:'الدرنة', en:'Tuber', icon:'🥔', def:'جزء من النبات ينمو داخل التربة ويخزّن فيه النبات الغذاء، وتحمل براعم ينشأ منها نبات جديد.'},
+        {term:'التكاثر الخضري', en:'Vegetative Reproduction', icon:'🌱', def:'قدرة بعض النباتات على التكاثر وإنتاج نباتات جديدة عن طريق بعض أجزائها، كالدرنات أو الأبصال.'},
+        {term:'مغطاة البذور', en:'Angiosperms', icon:'🌸', def:'نباتات تكوّن أزهارًا، تتحول فيما بعد إلى ثمار تحتوي داخلها على بذور.'},
+        {term:'معراة البذور', en:'Gymnosperms', icon:'🌲', def:'نباتات لا تكوّن أزهارًا، وتوجد بذورها داخل مخاريط.'},
+        {term:'دورة حياة نبات مغطى البذور', en:'Plant Life Cycle', icon:'🌻', type:'cycle', def:'تمر النباتات المزهرة بمراحل متتابعة ثم تتكرر الدورة من جديد.', stages:[
+          {name:'البذور', en:'Seeds', icon:'🌰', desc:'تحتوي البذرة على المواد الغذائية التي تساعدها على الإنبات عندما تتوافر لها الظروف المناسبة من الماء والتربة والهواء.'},
+          {name:'مرحلة الإنبات', en:'Germination', icon:'🌱', desc:'تبدأ البذرة بالنمو، وتخرج منها بادرة (نبتة) صغيرة.'},
+          {name:'مرحلة النمو', en:'Growth', icon:'🌿', desc:'يستمر نمو النبات، وتحدث له تغيرات في الشكل والكتلة والحجم مع مرور الزمن.'},
+          {name:'تكوين الأوراق', en:'Leaf Formation', icon:'🍃', desc:'ينمو النبات وتتكوّن له أوراق خضراء تساعده على صنع غذائه.'},
+          {name:'تكوين الأزهار والبذور', en:'Flowering & Seed Formation', icon:'🌸', desc:'يُكوّن النبات أزهارًا، وبعد انتقال حبوب اللقاح واندماجها مع المبيض، تتكوّن بذور جديدة داخل الزهرة.'},
+          {name:'نضج البذور', en:'Seed Maturity', icon:'🌾', desc:'تنضج البذور وتصبح جاهزة لتنثر وتبدأ معها دورة حياة جديدة.'},
+        ]},
+        {term:'تركيب الزهرة', en:'Flower Structure', icon:'🌺', def:'تتكون الزهرة من: السبلة والبتلة، والسداة (وتضم الخيط والمتك)، والكَربلة (وتضم الميسم والقلم والمبيض)؛ وتُعدّ السداة والكَربلة عضوَي التكاثر في الزهرة.'},
+        {term:'التكاثر بالعقل', en:'Reproduction by Cuttings', icon:'🌹', def:'طريقة من طرائق التكاثر الخضري، تعتمد على فصل جزء من ساق النبات الأصلي (يسمى العقلة) وزراعته في مكان آخر؛ للحصول على نبات جديد يشبه النبات الأصلي.'},
+      ]},
+      { title:'تكاثر الحيوانات ودورات حياتها', topics:[
+        {term:'الحيوانات البالغة', en:'Adult Animals', icon:'🐥', def:'الحيوانات المكتملة النمو، التي تستطيع أن تتكاثر وتنتج أفرادًا جددًا.'},
+        {term:'التكاثر بالولادة', en:'Live Birth', icon:'🐐', def:'طريقة تكاثر تلد فيها الأنثى صغارها أحياء، مثل الماعز.'},
+        {term:'التكاثر بالبيض', en:'Egg-laying', icon:'🐔', def:'طريقة تكاثر تضع فيها الأنثى بيوضًا يفقس منها الصغار، مثل الدجاج.'},
+        {term:'دورة حياة الفراشة', en:'Butterfly Life Cycle', icon:'🦋', type:'cycle', def:'تمر الفراشة بأربع مراحل متتابعة.', stages:[
+          {name:'البيضة', en:'Egg', icon:'⚪', desc:'تضع الفراشة مكتملة النمو القادرة على التكاثر بيوضها على أوراق النباتات.'},
+          {name:'اليرقة', en:'Larva (Caterpillar)', icon:'🐛', desc:'تخرج اليرقة من البيضة، وتتغذى على أوراق النباتات لتكبر.'},
+          {name:'الشرنقة', en:'Pupa (Chrysalis)', icon:'🟢', desc:'تكبر اليرقة ثم تصبح شرنقة، وتحدث خلال هذه المرحلة تغيرات كثيرة؛ إذ تتحول إلى فراشة تستعد للخروج.'},
+          {name:'الفراشة مكتملة النمو', en:'Adult Butterfly', icon:'🦋', desc:'تخرج الفراشة الكاملة من الشرنقة، وتصبح قادرة على التكاثر من جديد لتبدأ دورة حياة جديدة.'},
+        ]},
+        {term:'دورة حياة الضفدع', en:'Frog Life Cycle', icon:'🐸', type:'cycle', def:'يمر الضفدع بأربع مراحل متتابعة.', stages:[
+          {name:'البيوض', en:'Eggs', icon:'⚪', desc:'تضع أنثى الضفدع بيوضها في الماء.'},
+          {name:'أبو ذنيبة', en:'Tadpole', icon:'🐟', desc:'يفقس البيض وتخرج منه كائنات صغيرة تعيش في الماء، ولها ذيل تتنفس بواسطته بالخياشيم.'},
+          {name:'الضفدع الصغير', en:'Froglet', icon:'🐸', desc:'يبدأ أبو ذنيبة بالتغير؛ فتنمو له أرجل، ويبدأ ذيله بالتقلص تدريجيًا.'},
+          {name:'الضفدع مكتمل النمو', en:'Adult Frog', icon:'🐸', desc:'يكتمل نمو الضفدع، ويفقد ذيله تمامًا، ويصبح قادرًا على العيش على اليابسة والماء معًا.'},
+        ]},
+        {term:'رعاية صغار الحيوانات', en:'Animal Parental Care', icon:'🐦', def:'تحتاج بعض صغار الحيوانات إلى رعاية الأبوين أو أحدهما حتى تكبر، بتوفير الغذاء والمأوى والدفء والحماية كما في الطيور، بينما تترك حيوانات أخرى كالسلاحف بيوضها دون رعاية.'},
+      ]},
+      { title:'العلاقات بين الكائنات الحية', topics:[
+        {term:'الافتراس', en:'Predation', icon:'🦁', def:'علاقة بين كائنين حيين، أحدهما مفترس يتغذى على الآخر، والآخر فريسة.'},
+        {term:'التنافس', en:'Competition', icon:'⚔️', def:'علاقة تنشأ غالبًا بين كائنات حية من النوع نفسه تتنافس مع بعضها من أجل الغذاء والماء والضوء والمأوى.'},
+        {term:'التقايض', en:'Mutualism', icon:'🤝', def:'علاقة تنشأ بين كائنين حيين يستفيد منها كلاهما من الآخر.'},
+        {term:'التعايش', en:'Commensalism', icon:'🐦', def:'علاقة تنشأ بين كائنين حيين يستفيد منها أحدهما، ولا يستفيد الآخر ولا يتضرر.'},
+      ]},
+    ]
+  },
+  { id:3, key:'u3', title:'جسم الإنسان وصحته', icon:'🧠', accent:'#6a1b9a',
+    lessons:[
+      { title:'الحواس الخمس', topics:[
+        {term:'البصر', en:'Sight', icon:'👁️', def:'حاسة نتعرف بها إلى الأشياء من حولنا عن طريق العين.'},
+        {term:'السمع', en:'Hearing', icon:'👂', def:'حاسة نتعرف بها إلى الأصوات من حولنا عن طريق الأذن.'},
+        {term:'الشم', en:'Smell', icon:'👃', def:'حاسة نتعرف بها إلى الروائح عن طريق الأنف.'},
+        {term:'التذوق', en:'Taste', icon:'👅', def:'حاسة نتعرف بها إلى طعم الأشياء عن طريق اللسان.'},
+        {term:'اللمس', en:'Touch', icon:'✋', def:'حاسة نتعرف بها إلى الأشياء عند ملامستها عن طريق الجلد.'},
+        {term:'الدماغ', en:'Brain', icon:'🧠', def:'مركز تحليل المعلومات وحفظها في الجسم، يفسّر الإشارات التي تصله من أعضاء الحس.'},
+      ]},
+      { title:'الصحة الجسمية والنفسية والعاطفية', topics:[
+        {term:'الصحة الجسمية', en:'Physical Health', icon:'💪', def:'تمتع الجسم بسلامة أعضائه جميعها وتآزرها في عملها، وقدرة الجسم على مقاومة الأمراض.'},
+        {term:'الصحة النفسية والعاطفية', en:'Psychological & Emotional Health', icon:'😊', def:'سلامة الشخص من الناحية النفسية والعاطفية، وتكيّفه مع بيئته، وقدرته على ضبط انفعالاته.'},
+      ]},
+      { title:'إثراء وتوسع: التعلم رغم فقد الحواس', topics:[
+        {term:'نظام برايل', en:'Braille System', icon:'🔤', def:'نظام يساعد الأشخاص المكفوفين (فاقدي حاسة الإبصار) على القراءة، باستخدام حاسة اللمس للإحساس بنتوءات بارزة مرتبة على سطح الورقة.'},
+      ]},
+    ]
+  },
+  { id:4, key:'u4', title:'المادة', icon:'⚗️', accent:'#e65100',
+    lessons:[
+      { title:'خصائص المادة', topics:[
+        {term:'الكتلة', en:'Mass', icon:'⚖️', def:'مقدار المادة التي يحويها الجسم.'},
+        {term:'الحجم', en:'Volume', icon:'📦', def:'مقدار ما يشغله الجسم من حيّز.'},
+        {term:'الخصائص الفيزيائية', en:'Physical Properties', icon:'🔍', def:'صفات المادة مثل الشكل (المظهر الخارجي) والحجم والكتلة واللون، التي يمكن ملاحظتها وقياس معظمها.'},
+      ]},
+      { title:'تغيرات المادة', topics:[
+        {term:'التغير الفيزيائي', en:'Physical Change', icon:'🧊', def:'التغيّر الذي يحدث للمادة؛ فيتغيّر حجمها أو شكلها أو حالتها، ولا ينتج عنه مواد جديدة.'},
+        {term:'التغير الكيميائي', en:'Chemical Change', icon:'🔥', def:'التغيّر الذي ينتج منه مواد جديدة تختلف عن المادة الأصلية في خصائصها.'},
+      ]},
+      { title:'إثراء وتوسع: أعمل كالعلماء', topics:[
+        {term:'التخمر (مثال على التغير الكيميائي)', en:'Fermentation', icon:'🧪', def:'تفاعل كيميائي يحدث عند خلط الخميرة بالماء الدافئ والسكر، فتتكوّن فقاعات غاز؛ وهو مثال على التغير الكيميائي الذي تنتج فيه مادة جديدة مختلفة عن المواد الأصلية.'},
+      ]},
+    ]
+  },
+];
+
+/* ================= DATA: الفصل الدراسي الثاني (الوحدات 6-10) ================= */
+const DATA2 = [
+  { id:6, key:'u6', title:'الضوء', icon:'💡', accent:'#f9a825', accent2:'#ffd54f',
+    lessons:[
+      { title:'خصائص الضوء', idea:'الضوء طاقة، ويسير في خطوط مستقيمة.', topics:[
+        {term:'الضوء', en:'Light', icon:'💡', def:'شكل من أشكال الطاقة نُحسّ به عن طريق العين، ويُمكّننا من رؤية الأجسام من حولنا.'},
+        {term:'مصادر الضوء الطبيعية', en:'Natural Light Sources', icon:'🌞', def:'مصادر للضوء توجد أصلًا في الطبيعة ولم يتدخل الإنسان في صنعها، مثل الشمس والنجوم الأخرى والمضيئات الحيوية. وتُعدّ الشمس المصدر الرئيس للضوء على سطح الأرض.'},
+        {term:'مصادر الضوء الصناعية', en:'Artificial Light Sources', icon:'🕯️', def:'مصادر للضوء من صنع الإنسان، مثل المصباح والشمعة.'},
+        {term:'انتقال الضوء في خطوط مستقيمة', en:'Light Travels in Straight Lines', icon:'📏', def:'يسير الضوء في خطوط مستقيمة تنتشر في الاتجاهات جميعها؛ لذا لا يمكننا رؤية الأشياء التي خلف جدار الغرفة، فالأشعة الضوئية لا تنحني ولا تخترق الجدار.'},
+        {term:'الشعاع الضوئي', en:'Light Ray', icon:'🔦', def:'المسار الذي ينتقل فيه الضوء، ويُمثَّل بخط مستقيم عليه سهم يدل على اتجاه انتقال الضوء.'},
+        {term:'انعكاس الضوء', en:'Reflection of Light', icon:'🪞', def:'ارتداد الأشعة الضوئية عن سطوح المواد المختلفة في خطوط مستقيمة. ويساعدنا انعكاس الضوء عن الأجسام على رؤيتها.'},
+        {term:'الانعكاس المنتظم', en:'Specular Reflection', icon:'✨', def:'انعكاس الضوء عن الأجسام الملساء بخطوط مستقيمة وبالاتجاه نفسه، كما في المرآة وسطح الماء الساكن.'},
+        {term:'الانعكاس غير المنتظم', en:'Diffuse Reflection', icon:'🧱', def:'انعكاس الضوء عن الأجسام ذات السطوح الخشنة بخطوط مستقيمة، ولكن باتجاهات مختلفة.'},
+        {term:'كيف نرى الأجسام من حولنا؟', en:'How We See', icon:'👁️', type:'cycle', tag:'مراحل ثلاثية الأبعاد', def:'تتم الرؤية عبر ثلاث مراحل متتابعة.', stages:[
+          {name:'انطلاق الضوء من المصدر', en:'Light Source', icon:'💡', desc:'تنطلق الأشعة الضوئية من مصادرها في الاتجاهات جميعها. ونرى الأجسام المضيئة كالشمس والشمعة مباشرة؛ لأن أشعتها تصل إلى أعيننا.'},
+          {name:'سقوط الضوء على الجسم', en:'Light Hits the Object', icon:'📖', desc:'عند سقوط الأشعة الضوئية على الأجسام التي لا تُصدر الضوء، ينعكس جزء منها عن سطوحها.'},
+          {name:'وصول الضوء المنعكس إلى العين', en:'Reflected Light Reaches the Eye', icon:'👁️', desc:'تصل الأشعة المنعكسة عن الجسم إلى أعيننا، فنراه.'},
+        ]},
+      ]},
+      { title:'تكوّن الظلال', idea:'تتكوّن الظلال عندما تسقط الأشعة الضوئية على جسم معتم، ويظهر الظل دائمًا في الجهة المقابلة للمصدر الضوئي.', topics:[
+        {term:'المواد الشفافة', en:'Transparent Materials', icon:'🪟', def:'المواد التي يمكن للضوء أن يمر خلالها، فتُرى الأشياء من خلالها بوضوح، كالزجاج.'},
+        {term:'المواد شبه الشفافة', en:'Translucent Materials', icon:'🕶️', def:'المواد التي تسمح بمرور جزء من الضوء خلالها؛ لذا يمكن رؤية الأشياء خلالها بوضوح أقل، أو يتغير بعض صفاتها كاللون، كعدسات النظارات الشمسية.'},
+        {term:'المواد المعتمة', en:'Opaque Materials', icon:'🚪', def:'المواد التي تمنع الضوء من المرور خلالها؛ لذا لا يمكن الرؤية خلالها، كالخشب والحديد.'},
+        {term:'الظل', en:'Shadow', icon:'🌑', def:'منطقة مظلمة خلف الجسم المعتم أو شبه الشفاف، تتكوّن عندما يعترض الجسم مسار الضوء المستقيم فيحجبه عن المنطقة التي تقع خلفه.'},
+        {term:'طول الظل', en:'Shadow Length', icon:'📐', def:'يعتمد طول ظل الجسم على ميل الأشعة الساقطة عليه، فيختلف طوله في الصباح عنه وقت الظهيرة والمساء. ويعتمد أيضًا على بُعد الجسم عن مصدر الضوء، وعلى المسافة بين الجسم والسطح الذي يتكوّن عليه الظل.'},
+        {term:'مختبر الظل', en:'Shadow Lab', icon:'🔬', type:'lab', lab:'shadow', preview:['💡','🧸','🌑'], def:'جرّبي تحريك مصدر الضوء ورؤية تغيّر الظل.'},
+        {term:'صنّفي المواد حسب مرور الضوء', en:'Sorting Game', icon:'🎯', type:'lab', lab:'sort', set:'light', preview:['🪟','🕶️','🚪'], def:'لعبة تصنيف: شفافة أم شبه شفافة أم معتمة؟'},
+      ]},
+      { title:'إثراء وتوسع: النظارة الذكية', topics:[
+        {term:'النظارة الذكية', en:'Smart Glasses', icon:'🕶️', def:'ابتكار للمخترع الأردني عمر ناجي، نظارة ذكية تساعد المكفوف على تمييز الأشياء من حوله ومعرفتها، باستخدام كاميرا مثبّتة فيها تحدد الأشياء المختلفة وتنقل المعلومات إليه عن طريق سماعة الأذن المتصلة بها.'},
+      ]},
+    ]
+  },
+  { id:7, key:'u7', title:'حركة الأرض', icon:'🌍', accent:'#1565c0', accent2:'#64b5f6',
+    lessons:[
+      { title:'الليل والنهار', idea:'تدور الأرض باستمرار حول الشمس، وتدور حول محورها أيضًا.', topics:[
+        {term:'محور الدوران', en:'Rotate Axis', icon:'📍', def:'خط وهمي يمتد من القطب الشمالي ويمر في مركز الأرض، وينتهي عند القطب الجنوبي، وتدور الأرض حوله.'},
+        {term:'دورة الأرض اليومية', en:"Earth's Daily Cycle", icon:'🌗', def:'دوران الأرض حول محورها دورة كاملة مدة يوم كامل، أي كل (24 ساعة).'},
+        {term:'تعاقب الليل والنهار', en:'Day and Night', icon:'🌓', def:'نتيجة لدوران الأرض حول محورها يتعاقب الليل والنهار على سطحها؛ فيكون الوقت نهارًا في منطقة ما حين يكون موقعها مواجهًا للشمس، ويكون ليلًا حين يكون موقعها غير مواجه للشمس.'},
+        {term:'حركة الشمس الظاهرية', en:'Apparent Motion of the Sun', icon:'🌅', def:'يظن بعض الناس خطأً أن الشمس تنتقل في السماء من الشرق إلى الغرب، لكن السبب الحقيقي هو دوران الأرض حول محورها بعكس عقارب الساعة، أي من الغرب إلى الشرق.'},
+        {term:'مختبر الليل والنهار', en:'Day & Night Lab', icon:'🔬', type:'lab', lab:'daynight', preview:['☀️','🌍','🌙'], def:'أديري الأرض وشاهدي تعاقب الليل والنهار.'},
+      ]},
+      { title:'الفصول الأربعة', idea:'تحدث الفصول الأربعة بسبب ميلان محور الأرض ودورانها حول الشمس.', topics:[
+        {term:'المدار', en:'Orbit', icon:'🛰️', def:'المسار الذي يأخذه جسم ما أثناء دورانه حول جسم آخر.'},
+        {term:'دورة الأرض السنوية', en:'Annual Earth Cycle', icon:'🔄', def:'الدورة الكاملة للأرض حول الشمس كل سنة (365 يومًا تقريبًا، أو 12 شهرًا)، وتحافظ الأرض خلالها على ميل محورها باتجاه ثابت؛ فتتعاقب الفصول الأربعة.'},
+        {term:'اختلاف الفصول بين نصفي الكرة', en:'Seasons in the Hemispheres', icon:'🌐', def:'يحلّ فصل الصيف في نصف الكرة الشمالي حين يميل نحو الشمس، في حين يحلّ الشتاء في نصف الكرة الجنوبي. وبعد مرور 6 أشهر يحدث العكس.'},
+        {term:'الفصول الأربعة', en:'The Four Seasons', icon:'🍂', type:'cycle', tag:'دورة ثلاثية الأبعاد', def:'تتعاقب الفصول الأربعة على مدار السنة.', stages:[
+          {name:'الربيع', en:'Spring', icon:'🌸', desc:'فصل انتقالي بين الشتاء والصيف؛ تعتدل فيه درجات الحرارة تدريجيًا ويزداد طول النهار.'},
+          {name:'الصيف', en:'Summer', icon:'☀️', desc:'يحلّ في نصف الكرة الشمالي حين يميل نحو الشمس، فيكون النهار طويلًا والجو حارًا.'},
+          {name:'الخريف', en:'Autumn', icon:'🍁', desc:'فصل انتقالي بين الصيف والشتاء؛ تنخفض فيه درجات الحرارة تدريجيًا ويقصر النهار.'},
+          {name:'الشتاء', en:'Winter', icon:'❄️', desc:'يحلّ في نصف الكرة الشمالي حين يميل مبتعدًا عن الشمس، فيكون النهار قصيرًا والجو باردًا.'},
+        ]},
+      ]},
+      { title:'إثراء وتوسع: أعمل كالعلماء', topics:[
+        {term:'اختلاف ساعات النهار بين نصفَي الكرة الأرضية', en:'Daylight Hours Variation', icon:'🌏', def:'بسبب ميل محور الأرض، يختلف عدد ساعات النهار بين نصفَي الكرة الأرضية الشمالي والجنوبي في الوقت نفسه؛ ففي شهر شباط تقصر ساعات النهار في عمّان ويطول النهار في سدني (أستراليا)، لأن الفصلين في النصفين متعاكسان.'},
+      ]},
+    ]
+  },
+  { id:8, key:'u8', title:'القوة والطاقة', icon:'⚡', accent:'#d84315', accent2:'#ff8a65',
+    lessons:[
+      { title:'القوة', idea:'تؤثر القوة في الجسم فتغيّر من حالته الحركية أو شكله، وتؤثر القوى عن بعد أو بالتلامس.', topics:[
+        {term:'القوة', en:'Force', icon:'💪', def:'المؤثر الذي يعمل على تغيير الحالة الحركية لأي جسم. وقد تكون القوة قوة دفع أو قوة سحب.'},
+        {term:'قوى التلامس', en:'Contact Forces', icon:'🤝', def:'القوى التي تؤثر في الأجسام عند وجود تلامس بينها فقط، ومن أمثلتها: قوة الاحتكاك وقوة الشدّ.'},
+        {term:'قوة الاحتكاك', en:'Friction Force', icon:'📦', def:'القوة التي تنشأ عندما تتلامس سطوح الأجسام؛ فتمنعها من الانزلاق بسهولة بعضها فوق بعض.'},
+        {term:'قوة الشدّ', en:'Tension Force', icon:'🪢', def:'القوة التي تنشأ في الخيط أو الحبل، نتيجة الحركة التي تعمل على شدّ الأجسام.'},
+        {term:'قوى التأثير عن بعد', en:'Non-Contact Forces', icon:'🌠', def:'القوى التي تؤثر في الأجسام من دون أن تلامسها، ومن أمثلتها: قوة الجاذبية الأرضية والقوة المغناطيسية والقوة الكهربائية.'},
+        {term:'قوة الجاذبية الأرضية', en:'Gravity Force', icon:'🍎', def:'القوة التي تؤثر في الأجسام جميعها على سطح الأرض، من كائنات حية وجمادات؛ فتعمل على سحب الأجسام نحو الأرض.'},
+        {term:'القوة المغناطيسية', en:'Magnetic Force', icon:'🧲', def:'القوة التي يؤثر بها المغناطيس في الأجسام والمغانط الأخرى.'},
+        {term:'القوة الكهربائية', en:'Electric Force', icon:'🎈', def:'القوة التي تنشأ بين الأجسام المشحونة. فالأجسام المشحونة بشحنات مختلفة تتجاذب، والمشحونة بشحنات متشابهة تتنافر.'},
+        {term:'مختبر المغانط', en:'Magnet Lab', icon:'🔬', type:'lab', lab:'magnet', preview:['🧲','↔️','📎'], def:'جرّبي تقريب قطبي مغناطيسين.'},
+        {term:'صنّفي القوى', en:'Sorting Game', icon:'🎯', type:'lab', lab:'sort', set:'force', preview:['📦','🍎','🧲'], def:'لعبة تصنيف: قوة تلامس أم تأثير عن بعد؟'},
+      ]},
+      { title:'الطاقة', idea:'للطاقة أشكال مختلفة، ويمكن تحويلها من شكل إلى آخر.', topics:[
+        {term:'الطاقة', en:'Energy', icon:'🔋', def:'القدرة على إنجاز عمل ما أو إحداث تغيير.'},
+        {term:'أشكال الطاقة', en:'Forms of Energy', icon:'🌈', def:'للطاقة أشكال مختلفة، منها: الحركية والكهربائية والحرارية. وتنحصر أشكال الطاقة جميعها في نوعين رئيسين هما: الطاقة الحركية، وطاقة الوضع (الكامنة).'},
+        {term:'الطاقة الحركية', en:'Kinetic Energy', icon:'🏃', def:'الطاقة التي تمكّن الجسم من الحركة؛ فالهواء المتحرك يمتلك طاقة حركية تمكّنه من تحريك طائرة ورقية.'},
+        {term:'طاقة الوضع', en:'Potential Energy', icon:'🪨', def:'الطاقة المخزونة داخل الجسم أو المواد، وتعطيها القدرة على إحداث التغيير. فكرة مرفوعة عن سطح الأرض تمتلك طاقة وضع، وتتحول إلى حركية عند سقوطها.'},
+        {term:'طاقة الوضع المرونية', en:'Elastic Potential Energy', icon:'🪀', def:'تخزّن الأجسام المرنة عند ضغطها أو شدّها طاقة وضع تُسمى طاقة وضع مرونية، كالنابض والشريط المطاطي وسطح الترامبولين.'},
+        {term:'تحولات الطاقة', en:'Energy Transformations', icon:'🔁', type:'cycle', tag:'أمثلة ثلاثية الأبعاد', def:'تتحول الطاقة من شكل إلى آخر.', stages:[
+          {name:'المكواة', en:'Iron', icon:'👔', desc:'تتحول الطاقة الكهربائية الداخلة إلى المكواة إلى طاقة حرارية.'},
+          {name:'الشمعة', en:'Candle', icon:'🕯️', desc:'عندما تحترق الشمعة تتحول الطاقة الكيميائية المخزونة فيها إلى طاقة حرارية وطاقة ضوئية.'},
+          {name:'ركل كرة القدم', en:'Kicking a Ball', icon:'⚽', desc:'تتحول الطاقة الكيميائية المخزونة في الغذاء داخل جسم الطفل إلى طاقة حركية تحرّك الكرة وتدفعها إلى الأمام.'},
+          {name:'الشريط المطاطي المشدود', en:'Stretched Rubber Band', icon:'🎯', desc:'تتحول طاقة الوضع المخزونة في الشريط المطاطي المشدود إلى طاقة حركية عند إطلاقه.'},
+        ]},
+        {term:'مختبر الطاقة', en:'Energy Lab', icon:'🔬', type:'lab', lab:'energy', preview:['🏀','⬇️','🔋'], def:'أسقطي كرة من ارتفاعات مختلفة وراقبي تحول الطاقة.'},
+      ]},
+      { title:'إثراء وتوسع: الطاقة المائية', topics:[
+        {term:'الطاقة المائية', en:'Water (Hydro) Energy', icon:'💧', def:'طاقة كهربائية تُولَّد من حركة المياه الجارية أو الساقطة من أعالي السدود؛ إذ يحرك الماء الساقط مراوح (توربينات) موصولة بمولدات كهربائية، وهي من مصادر الطاقة المتجددة، ذات تكاليف قليلة، ولا تؤدي إلى تلوث البيئة.'},
+      ]},
+    ]
+  },
+  { id:9, key:'u9', title:'الكهرباء', icon:'🔌', accent:'#283593', accent2:'#7986cb',
+    lessons:[
+      { title:'الدارات الكهربائية البسيطة', idea:'التيار الكهربائي هو حركة الشحنات الكهربائية باتجاه واحد؛ ولا يمر التيار الكهربائي إلا في الدارات الكهربائية المغلقة.', topics:[
+        {term:'التيار الكهربائي', en:'Electric Current', icon:'⚡', def:'حركة الشحنات الكهربائية باتجاه واحد عبر المادة. ولا يمر التيار الكهربائي إلا في الدارات الكهربائية المغلقة.'},
+        {term:'الدارة الكهربائية', en:'Electric Circuit', icon:'🔁', def:'المسار المغلَق الذي تمرّ فيه الكهرباء.'},
+        {term:'مكونات الدارة البسيطة', en:'Circuit Components', icon:'🧩', def:'تتكون الدارة الكهربائية البسيطة من 3 مكونات رئيسة هي: مصدر كهربائي (البطارية)، ومصباح كهربائي، وأسلاك.'},
+        {term:'الأسلاك', en:'Wires', icon:'🔗', def:'مواد موصلة تسمح بمرور الكهرباء ونقلها في الدارة الكهربائية.'},
+        {term:'المصباح الكهربائي', en:'Light Bulb', icon:'💡', def:'يُستخدم في الدارة الكهربائية للكشف عن مرور الكهرباء.'},
+        {term:'البطارية', en:'Battery', icon:'🔋', def:'المكوّن الذي يزوّد الدارة بالكهرباء.'},
+        {term:'الدارة المغلقة والدارة المفتوحة', en:'Closed & Open Circuits', icon:'🔌', def:'تكون الدارة مغلقة عندما يكون المسار الذي تتحرك فيه الشحنات مغلقًا، فينشأ التيار ويضيء المصباح. وتكون مفتوحة عند وجود انقطاع في المسار، فلا ينشأ تيار كهربائي.'},
+        {term:'المفتاح الكهربائي', en:'Electric Switch', icon:'🔘', def:'المكوّن الذي يُستخدم للتحكم في فتح الدارة أو إغلاقها في الأجهزة الكهربائية المختلفة.'},
+        {term:'مختبر الدارة الكهربائية', en:'Circuit Lab', icon:'🔬', type:'lab', lab:'circuit', mode:'switch', preview:['🔋','💡','🔘'], def:'افتحي الدارة وأغلقيها بالمفتاح.'},
+      ]},
+      { title:'المواد الموصلة والمواد العازلة', idea:'بعض المواد توصل الكهرباء، وبعض المواد لا توصلها.', topics:[
+        {term:'المواد الموصلة', en:'Conductors', icon:'🥄', def:'المواد التي تسمح بمرور التيار الكهربائي خلالها، مثل: النحاس والألمنيوم والذهب والحديد وماء الصنبور.'},
+        {term:'المواد العازلة', en:'Insulators', icon:'🧤', def:'المواد التي لا تسمح بمرور التيار الكهربائي خلالها، مثل: الخشب والزجاج والبلاستيك والمطاط.'},
+        {term:'السلامة من الكهرباء', en:'Electrical Safety', icon:'⚠️', def:'تُغطّى الأسلاك الكهربائية بطبقة من البلاستيك لأنه عازل؛ فلمس الأسلاك المكشوفة يسبب صدمة كهربائية تعرّض الحياة للخطر. ويرتدي فنيو الصيانة قفازات من المطاط، ويستخدمون أدوات مقابضها بلاستيكية.'},
+        {term:'مختبر الموصلة والعازلة', en:'Conductor Lab', icon:'🔬', type:'lab', lab:'circuit', mode:'material', preview:['🔩','🪵','💡'], def:'اختبري المواد: هل تضيء المصباح؟'},
+      ]},
+      { title:'إثراء وتوسع: ترشيد استهلاك الطاقة', topics:[
+        {term:'ملصق كفاءة الطاقة الكهربائية', en:'Energy Efficiency Label', icon:'🏷️', def:'ملصق إرشادي يُثبَّت على الأجهزة الكهربائية كالمكيفات والثلاجات، يبيّن كفاءة الجهاز في استهلاك الطاقة الكهربائية؛ ليساعد المستخدم على المقارنة بين الأجهزة واختيار الأكثر توفيرًا للطاقة.'},
+      ]},
+    ]
+  },
+  { id:10, key:'u10', title:'الموارد الطبيعية في البيئة', icon:'🌳', accent:'#33691e', accent2:'#9ccc65',
+    lessons:[
+      { title:'الموارد الحيوية', idea:'تشمل الموارد الحيوية النباتات والحيوانات والمواد التي تأتي منها، وتُستخدم في حياتنا.', topics:[
+        {term:'الموارد الطبيعية', en:'Natural Resources', icon:'🌍', def:'المواد التي يحتاج إليها الإنسان في بيئته ليعيش حيًّا ويبقى؛ ومن أمثلتها: الماء والصخور.'},
+        {term:'الموارد الحيوية', en:'Biotic Resources', icon:'🌾', def:'موارد نحصل عليها من الكائنات الحية، وما يُنتَج عنها من مشتقّات مختلفة؛ مثل: الخشب والحليب واللحوم.'},
+        {term:'النباتات كمورد حيوي', en:'Plants as Resources', icon:'🌳', def:'يعتمد الإنسان على النباتات في غذائه، ويصنع من أخشابها الأثاث، ومن القطن الملابس، ومن بعضها الأدوية، ويصنع الورق من أوراقها وسيقانها.'},
+        {term:'الحيوانات كمورد حيوي', en:'Animals as Resources', icon:'🐄', def:'يعتمد الإنسان على الحيوانات في غذائه، ويستفيد من بعضها في النقل، ويستخدم صوف بعضها وريشها وجلودها في صناعات مختلفة.'},
+        {term:'الوقود الأحفوري', en:'Fossil Fuels', icon:'⛽', def:'مورد طبيعي حيوي، يتكوّن من بقايا النباتات والحيوانات التي عاشت قبل ملايين السنين. ومن أنواعه: الفحم الحجري والنفط والغاز الطبيعي.'},
+        {term:'النفط', en:'Oil', icon:'🛢️', def:'مصدر مهم للطاقة، نستفيد منه في تشغيل المصانع وتحريك وسائل النقل والتدفئة، وفي إنتاج كثير من المواد التي نستخدمها في حياتنا اليومية.'},
+        {term:'أثر حرق الوقود الأحفوري', en:'Burning Fossil Fuels', icon:'🏭', def:'ينتج عن حرق الوقود الأحفوري غازات تلوّث الهواء الجوي وتغيّر مكوّناته، وتلحق الأذى بالبيئة؛ فتتسبب في رفع درجة حرارة سطح الأرض. وتُذاب هذه الغازات في ماء المطر فتضرّ بالكائنات الحية والمباني.'},
+        {term:'تغيّر المناخ', en:'Climate Change', icon:'🌡️', def:'تغيّر الأحوال الجوية مع الزمن في كثير من مناطق العالم.'},
+        {term:'كيف يتكوّن النفط؟', en:'How Oil Forms', icon:'🛢️', type:'cycle', tag:'مراحل ثلاثية الأبعاد', def:'يتكوّن النفط عبر 4 مراحل.', stages:[
+          {name:'كائنات حية دقيقة في البحر', en:'Tiny Sea Organisms', icon:'🦠', desc:'تعيش كائنات حية بحرية دقيقة في البحر.'},
+          {name:'دفن البقايا', en:'Burial', icon:'🌊', desc:'تُدفن بقايا هذه الكائنات في قاع البحر بعد موتها، وتتراكم فوقها الرسوبيات.'},
+          {name:'الضغط والحرارة', en:'Pressure & Heat', icon:'🔥', desc:'يتولد ضغط وحرارة بتأثير الرسوبيات المتراكمة فوق البقايا.'},
+          {name:'التحول إلى نفط', en:'Becoming Oil', icon:'🛢️', desc:'مع مرور الوقت تتحول البقايا إلى نفط في باطن الأرض، ويستخرجه الإنسان بحفر الآبار.'},
+        ]},
+        {term:'صنّفي الموارد', en:'Sorting Game', icon:'🎯', type:'lab', lab:'sort', set:'resource', preview:['🪵','💧','🛢️'], def:'لعبة تصنيف: مورد حيوي أم غير حيوي؟'},
+      ]},
+      { title:'الموارد غير الحيوية', idea:'الماء والصخور والمعادن موارد غير حيوية، نستخدمها كثيرًا في حياتنا.', topics:[
+        {term:'الموارد غير الحيوية', en:'Abiotic Resources', icon:'⛰️', def:'أشياء غير حية توجد في الطبيعة، ونحتاج إليها في حياتنا، مثل: الماء والهواء والمعادن والصخور.'},
+        {term:'الماء', en:'Water', icon:'💧', def:'مورد غير حيوي، وهو أساس حياة الكائنات الحية؛ فهو يدخل في تركيب أجسامها، وتحتاج إليه كي تنمو وتبقى حية. ويوجد في الطبيعة في ثلاث حالات: السائلة والصلبة والغازية.'},
+        {term:'أين يوجد الماء؟', en:'Where Is Water?', icon:'🌍', def:'يُغطّي الماء ثلاثة أرباع سطح الأرض تقريبًا، ويتجمّع على سطحها في البحار والمحيطات والأنهار.'},
+        {term:'المياه السطحية', en:'Surface Water', icon:'🌊', def:'ماء على سطح الأرض، يتجمّع في البحار والمحيطات والأنهار.'},
+        {term:'المياه الجوفية', en:'Ground Water', icon:'🕳️', def:'ماء في باطن الأرض، ناتج عن تسرّب جزء من ماء المطر عبر التربة والشقوق في الصخور.'},
+        {term:'المياه المالحة والعذبة', en:'Salt & Fresh Water', icon:'🧂', def:'تحتوي مياه البحار والمحيطات على كمية كبيرة من الأملاح، فهي غير صالحة للشرب أو الزراعة. أما مياه الأنهار والبحيرات فهي عذبة لأنها تحتوي على كمية قليلة من الأملاح، فهي صالحة للشرب والزراعة.'},
+        {term:'المعدن', en:'Mineral', icon:'💎', def:'مادة صلبة توجد على شكل طبيعي في الصخور، أصلها ليس من الكائنات الحية.'},
+        {term:'أمثلة على المعادن', en:'Examples of Minerals', icon:'🥇', def:'من المعادن الشائعة: الذهب (تُصنع منه الحلي والمجوهرات)، والجبس (ديكورات المنازل)، والكوارتز (زجاجة الساعة)، والغرافيت (قلم الرصاص).'},
+        {term:'الصخور', en:'Rocks', icon:'🪨', def:'مادة طبيعية صلبة تكوّنت بطرائق مختلفة، تتكوّن من نوع واحد من المعادن أو أكثر من نوع، وقد تحتوي على مواد أصلها من كائنات حية. وتُعدّ الوحدة البنائية الرئيسة لمكونات القشرة الأرضية.'},
+        {term:'صخر الغرانيت', en:'Granite', icon:'🌋', def:'صخر يتكوّن من معادن عدّة، منها: الفلسبار والكوارتز والبيوتيت.'},
+        {term:'دورة الماء في الطبيعة', en:'Water Cycle in Nature', icon:'🌧️', type:'cycle', tag:'دورة ثلاثية الأبعاد', def:'حركة الماء في الطبيعة والعمليات التي يمر بها.', stages:[
+          {name:'التبخر', en:'Evaporation', icon:'🌊', desc:'يتبخر الماء من المسطحات المائية على سطح الأرض بفعل حرارة الشمس، فيصعد بخار الماء إلى طبقات الجو العليا.'},
+          {name:'التكاثف', en:'Condensation', icon:'☁️', desc:'يتكاثف بخار الماء متحولًا إلى قطرات صغيرة تتجمع على هيئة غيوم، وتتحرك من مكان إلى آخر بفعل الرياح.'},
+          {name:'الهطول', en:'Precipitation', icon:'🌧️', desc:'عندما يكبر حجم القطرات ويزداد وزنها يحدث الهطول على سطح الأرض على هيئة أمطار أو ثلوج أو برَد.'},
+          {name:'الجريان والتسرب', en:'Runoff & Seepage', icon:'🏞️', desc:'يتسرب جزء من المياه إلى باطن الأرض مكوّنًا المياه الجوفية، ويجري الجزء الآخر على سطحها. وهكذا تستمر العملية على الدوام.'},
+        ]},
+      ]},
+      { title:'إثراء وتوسع: الكنوز المدفونة', topics:[
+        {term:'إعادة تدوير الأجهزة الإلكترونية', en:'E-waste Recycling', icon:'♻️', def:'تحتوي بعض رقائق أجهزة الحاسوب القديمة على مواد ثمينة كالذهب والفضة والنحاس والرصاص؛ لذلك تبحث مصانع إعادة التدوير عن هذه الأجهزة غير الصالحة للاستخدام، بدلًا من التخلص منها.'},
+      ]},
+    ]
+  },
+];
+
+/* ===== ألعاب ومختبرات إضافية لوحدات الفصل الأول ===== */
+function addTopics(unitId, lessonIdx, topics){ DATA1.find(u => u.id === unitId).lessons[lessonIdx].topics.push(...topics); }
+function setIdea(unitId, lessonIdx, text){ DATA1.find(u => u.id === unitId).lessons[lessonIdx].idea = text; }
+setIdea(1,0,'وضع العلماء الكائنات الحية في ممالك؛ لتسهل دراستها.');
+setIdea(1,1,'صنّف العلماء الكائنات الحية في ممالك حسب صفاتها.');
+setIdea(2,0,'تتكاثر النباتات بطرائق مختلفة، منها التكاثر بالبذور والتكاثر الخضري.');
+setIdea(3,0,'نتعرّف الأشياء من حولنا باستخدام حواسنا الخمس (السمع، والبصر، والتذوق، والشم، واللمس).');
+setIdea(4,0,'كتلة المادة وحجمها وشكلها من الخصائص الفيزيائية.');
+addTopics(1,1,[{term:'لعبة الممالك الخمس',en:'Kingdoms Game',icon:'🎯',type:'lab',lab:'sort',set:'kingdom',preview:['🦠','🍄','🐐'],def:'صنّفي الكائنات في ممالكها.'}]);
+addTopics(2,0,[{term:'لعبة ترتيب دورة حياة النبات',en:'Plant Cycle Game',icon:'🎯',type:'lab',lab:'order',set:'plant',preview:['🌰','🌱','🌸'],def:'رتّبي المراحل.'}]);
+addTopics(2,1,[
+  {term:'لعبة ترتيب دورة حياة الفراشة',en:'Butterfly Game',icon:'🎯',type:'lab',lab:'order',set:'butterfly',preview:['🥚','🐛','🦋'],def:'رتّبي المراحل.'},
+  {term:'لعبة ترتيب دورة حياة الضفدع',en:'Frog Game',icon:'🎯',type:'lab',lab:'order',set:'frog',preview:['⚪','🐟','🐸'],def:'رتّبي المراحل.'}]);
+addTopics(2,2,[{term:'لعبة العلاقات بين الكائنات',en:'Relations Game',icon:'🎯',type:'lab',lab:'sort',set:'relation',preview:['🦁','🐝','🐦'],def:'ما نوع العلاقة؟'}]);
+addTopics(3,0,[{term:'لعبة الحواس الخمس',en:'Senses Game',icon:'🎯',type:'lab',lab:'sort',set:'sense',preview:['👁️','👂','👃'],def:'أي حاسة نستخدم؟'}]);
+addTopics(4,0,[{term:'مختبر قياس الحجم',en:'Volume Lab',icon:'🔬',type:'lab',lab:'volume',preview:['🧪','🔩','📏'],def:'قيسي الحجم بالإزاحة.'}]);
+addTopics(4,1,[{term:'لعبة التغيرات',en:'Changes Game',icon:'🎯',type:'lab',lab:'sort',set:'change',preview:['🧊','🔥','🍞'],def:'فيزيائي أم كيميائي؟'}]);
+
+function addTopics2(unitId, lessonIdx, topics){ DATA2.find(u => u.id === unitId).lessons[lessonIdx].topics.push(...topics); }
+addTopics2(6,0,[{term:'لعبة ترتيب خطوات الإبصار',en:'Vision Game',icon:'🎯',type:'lab',lab:'order',set:'vision',preview:['💡','📖','👁️'],def:'رتّبي الخطوات.'}]);
+addTopics2(7,1,[{term:'لعبة الأرض والفصول',en:'Orbit & Seasons Game',icon:'🎯',type:'lab',lab:'orbit',preview:['☀️','🌍','🍂'],def:'حرّكي الأرض حول الشمس وتعرّفي الفصول.'}]);
+addTopics2(10,0,[{term:'لعبة ترتيب مراحل تكوّن النفط',en:'Oil Game',icon:'🎯',type:'lab',lab:'order',set:'oil',preview:['🦠','🔥','🛢️'],def:'رتّبي المراحل.'}]);
+addTopics2(10,1,[{term:'لعبة ترتيب دورة الماء',en:'Water Cycle Game',icon:'🎯',type:'lab',lab:'order',set:'water',preview:['🌊','☁️','🌧️'],def:'رتّبي المراحل.'}]);
+
+const SEMESTERS = { 1: DATA1, 2: DATA2 };
+let currentSemester = 1;
+
+/* ================= APP LOGIC ================= */
+const unitsGrid = document.getElementById('unitsGrid');
+const lessonsList = document.getElementById('lessonsList');
+const topicsGrid = document.getElementById('topicsGrid');
+const screens = {
+  home: document.getElementById('screen-home'),
+  unit: document.getElementById('screen-unit'),
+  lesson: document.getElementById('screen-lesson'),
+  search: document.getElementById('screen-search'),
+  quiz: document.getElementById('screen-quiz'),
+  cycle: document.getElementById('screen-cycle'),
+  lab: document.getElementById('screen-lab'),
+};
+const headerTitle = document.getElementById('headerTitle');
+const headerSub = document.getElementById('headerSub');
+const backBtn = document.getElementById('backBtn');
+
+let state = { unit:null, lesson:null };
+
+const LIGHT_ACCENT = { u1:'#66bb6a', u2:'#4db6ac', u3:'#ab47bc', u4:'#ff9800' };
+const semTabs = document.getElementById('semTabs');
+
+function renderHome(){
+  const units = SEMESTERS[currentSemester];
+  unitsGrid.innerHTML = units.map(u => `
+    <div class="unit-card" style="--c1:${u.accent};--c2:${u.accent2 || LIGHT_ACCENT[u.key] || u.accent}" data-id="${u.id}">
+      <span class="num">الوحدة ${arNum(u.id)}</span>
+      <span class="icon3d">${u.icon}</span>
+      <h3>${u.title}</h3>
+      <span class="count">${u.lessons.length} دروس</span>
+    </div>
+  `).join('');
+  [...unitsGrid.querySelectorAll('.unit-card')].forEach(el=>{
+    el.addEventListener('click', ()=> openUnit(parseInt(el.dataset.id)));
+  });
+  [...semTabs.querySelectorAll('.sem-tab')].forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.sem)===currentSemester);
+  });
+}
+
+[...semTabs.querySelectorAll('.sem-tab')].forEach(b=>{
+  b.addEventListener('click', ()=>{
+    currentSemester = parseInt(b.dataset.sem);
+    renderHome();
+  });
+});
+
+function arNum(n){ return ['', 'الأولى','الثانية','الثالثة','الرابعة','الخامسة','السادسة','السابعة','الثامنة','التاسعة','العاشرة'][n] || n; }
+
+function findUnit(id){
+  return [...DATA1, ...DATA2].find(u=>u.id===id);
+}
+
+function openUnit(id){
+  state.unit = findUnit(id);
+  headerTitle.textContent = state.unit.title;
+  headerSub.textContent = 'اختر درسًا لاستكشاف مفاهيمه';
+  backBtn.classList.add('show');
+  lessonsList.innerHTML = state.unit.lessons.map((l,i)=>`
+    <div class="lesson-row" style="--accent:${state.unit.accent}" data-i="${i}">
+      <div class="lnum">${i+1}</div>
+      <div class="ltext"><h4>${l.title}</h4><span>${l.topics.length} مفاهيم تفاعلية</span></div>
+      <div class="arrow">‹</div>
+    </div>
+  `).join('');
+  [...lessonsList.querySelectorAll('.lesson-row')].forEach(el=>{
+    el.addEventListener('click', ()=> openLesson(parseInt(el.dataset.i)));
+  });
+  showScreen('unit');
+}
+
+function topicCardHTML(t, accent, idx){
+  if(t.type === 'lab'){
+    const prev = (t.preview || [t.icon]).map((x,i,arr)=> `<span class="pbadge">${x}</span>`).join('');
+    return `
+      <div class="cycle-card lab-card" style="--accent:${accent}" data-i="${idx}">
+        <span class="badge-3d-tag">${t.lab==='sort'||t.lab==='order'||t.lab==='orbit' ? 'لعبة تفاعلية' : 'مختبر تفاعلي ثلاثي الأبعاد'}</span>
+        <h5>${t.term}</h5>
+        <div class="en">${t.en||''}</div>
+        <div class="preview-row">${prev}</div>
+        <div class="explore">اضغطي للعب والتجربة ◀</div>
+      </div>`;
+  }
+  if(t.type === 'cycle'){
+    const preview = t.stages.map((s,i)=> `<span class="pbadge">${s.icon}</span>${i<t.stages.length-1?'<span class="parrow">←</span>':''}`).join('');
+    return `
+      <div class="cycle-card" style="--accent:${accent}" data-i="${idx}" data-cycle="1">
+        <span class="badge-3d-tag">${t.tag||'دورة حياة ثلاثية الأبعاد'}</span>
+        <h5>${t.term}</h5>
+        <div class="en">${t.en||''}</div>
+        <div class="preview-row">${preview}</div>
+        <div class="explore">اضغطي لاستكشاف كل مرحلة بالتفصيل ◀</div>
+      </div>`;
+  }
+  return `
+    <div class="flip-card" style="--accent:${accent}" data-i="${idx}">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="badge3d">${t.icon}</div>
+          <h5>${t.term}</h5>
+          <div class="en">${t.en||''}</div>
+          <div class="tap-hint">اضغط لعرض التعريف ↺</div>
+        </div>
+        <div class="flip-face flip-back">
+          <h5>${t.term} ${t.en? '· '+t.en:''}</h5>
+          <p>${t.def}</p>
+        </div>
+      </div>
+    </div>`;
+}
+function bindFlipCards(container, topicsSource, accent, returnInfo){
+  [...container.querySelectorAll('.flip-card')].forEach(el=>{
+    el.addEventListener('click', ()=> el.classList.toggle('flipped'));
+  });
+  [...container.querySelectorAll('.cycle-card:not(.lab-card)')].forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const t = topicsSource[parseInt(el.dataset.i)];
+      openCycle(t, accent, returnInfo);
+    });
+  });
+  [...container.querySelectorAll('.lab-card')].forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const t = topicsSource[parseInt(el.dataset.i)];
+      openLab(t, accent || t.accent, returnInfo);
+    });
+  });
+}
+
+function openLesson(i){
+  state.lesson = state.unit.lessons[i];
+  headerTitle.textContent = state.lesson.title;
+  headerSub.textContent = state.unit.title;
+  backBtn.classList.add('show');
+  topicsGrid.innerHTML = state.lesson.topics.map((t,idx)=>topicCardHTML(t, state.unit.accent, idx)).join('');
+  bindFlipCards(topicsGrid, state.lesson.topics, state.unit.accent, {screen:'lesson', title:state.lesson.title, sub:state.unit.title});
+  const ib = document.getElementById('ideaBox');
+  if(state.lesson.idea){ ib.style.display='block'; ib.innerHTML = '<b>الفكرة الرئيسة</b>' + state.lesson.idea; } else { ib.style.display='none'; }
+  quizBtn.style.display = state.lesson.topics.filter(t=>!t.type).length >= 2 ? 'block' : 'none';
+  showScreen('lesson');
+}
+
+/* ===== Global search across all units/lessons ===== */
+function allTopicsFlat(){
+  const list=[];
+  [...DATA1, ...DATA2].forEach(u=> u.lessons.forEach(l=> l.topics.forEach(t=> list.push({...t, accent:u.accent, unitTitle:u.title, lessonTitle:l.title}))));
+  return list;
+}
+const ALL_TOPICS = allTopicsFlat();
+
+const searchInput = document.getElementById('searchInput');
+const searchGrid = document.getElementById('searchGrid');
+const searchEmpty = document.getElementById('searchEmpty');
+
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim();
+  if(!q){ return; }
+  runSearch(q);
+});
+searchInput.addEventListener('focus', ()=>{ if(searchInput.value.trim()) runSearch(searchInput.value.trim()); });
+
+function runSearch(q){
+  const norm = s => (s||'').toString().toLowerCase();
+  const nq = norm(q);
+  const results = ALL_TOPICS.filter(t => norm(t.term).includes(nq) || norm(t.en).includes(nq) || norm(t.def).includes(nq));
+  headerTitle.textContent = 'نتائج البحث';
+  headerSub.textContent = `"${q}" — ${results.length} نتيجة`;
+  backBtn.classList.add('show');
+  state.fromSearch = true;
+  if(results.length===0){
+    searchGrid.innerHTML=''; searchEmpty.style.display='block';
+  } else {
+    searchEmpty.style.display='none';
+    searchGrid.innerHTML = results.map((t,idx)=>topicCardHTML(t, t.accent, idx)).join('');
+    bindFlipCards(searchGrid, results, null, {screen:'search', title:'نتائج البحث', sub:`"${q}" — ${results.length} نتيجة`});
+  }
+  showScreen('search');
+}
+
+/* ===== Quick quiz (per lesson) ===== */
+const quizBtn = document.getElementById('quizBtn');
+const quizWrap = document.getElementById('quizWrap');
+let quizState = {questions:[], idx:0, score:0};
+
+quizBtn.addEventListener('click', ()=>{
+  const topics = state.lesson.topics.filter(t=>!t.type);
+  if(topics.length < 2){ return; }
+  const pool = topics.length >= 4 ? topics : (() => {
+    // borrow distractors from the whole unit if lesson is short
+    const unitTopics = state.unit.lessons.flatMap(l=>l.topics).filter(t=>!t.type);
+    return unitTopics.length >= 4 ? unitTopics : ALL_TOPICS.filter(t=>!t.type);
+  })();
+  quizState.questions = shuffle(topics.slice()).map(t => buildQuestion(t, pool));
+  quizState.idx = 0; quizState.score = 0;
+  headerTitle.textContent = 'اختبار سريع';
+  headerSub.textContent = state.lesson.title;
+  backBtn.classList.add('show');
+  showScreen('quiz');
+  renderQuizQuestion();
+});
+
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function buildQuestion(correctTopic, pool){
+  const distractorsPool = shuffle(pool.filter(t=>t.term!==correctTopic.term));
+  const distractors = distractorsPool.slice(0,3).map(t=>t.def);
+  const options = shuffle([correctTopic.def, ...distractors]);
+  return { icon:correctTopic.icon, term:correctTopic.term, en:correctTopic.en, correct:correctTopic.def, options };
+}
+
+function renderQuizQuestion(){
+  if(quizState.idx >= quizState.questions.length){ renderQuizResult(); return; }
+  const q = quizState.questions[quizState.idx];
+  quizWrap.innerHTML = `
+    <div class="quiz-progress">سؤال ${quizState.idx+1} من ${quizState.questions.length}</div>
+    <div class="quiz-card">
+      <span class="qicon">${q.icon}</span>
+      <h4>ما تعريف مفهوم: <strong>${q.term}</strong>${q.en? ' ('+q.en+')':''}؟</h4>
+      <div class="quiz-options">
+        ${q.options.map((opt,i)=>`<button class="quiz-opt" data-i="${i}">${opt}</button>`).join('')}
+      </div>
+      <button class="quiz-next" id="quizNext">${quizState.idx+1 < quizState.questions.length ? 'السؤال التالي ←' : 'عرض النتيجة ←'}</button>
+    </div>`;
+  const opts = [...quizWrap.querySelectorAll('.quiz-opt')];
+  const nextBtn = document.getElementById('quizNext');
+  opts.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      opts.forEach(b=>b.disabled=true);
+      const chosen = btn.textContent;
+      if(chosen === q.correct){ btn.classList.add('correct'); quizState.score++; }
+      else{
+        btn.classList.add('wrong');
+        opts.find(b=>b.textContent===q.correct).classList.add('correct');
+      }
+      nextBtn.style.display='inline-block';
+    });
+  });
+  nextBtn.addEventListener('click', ()=>{ quizState.idx++; renderQuizQuestion(); });
+}
+
+function renderQuizResult(){
+  const total = quizState.questions.length;
+  const pct = Math.round((quizState.score/total)*100);
+  const msg = pct>=80 ? 'ممتاز! 🌟' : pct>=50 ? 'جيد، واصلي المراجعة 👍' : 'حاولي مرة أخرى وراجعي البطاقات 💪';
+  quizWrap.innerHTML = `
+    <div class="quiz-result">
+      <span style="font-size:54px;">🏆</span>
+      <div class="score">${quizState.score} / ${total}</div>
+      <p>${msg}</p>
+      <button class="again" id="quizAgain">إعادة الاختبار</button>
+    </div>`;
+  document.getElementById('quizAgain').addEventListener('click', ()=> quizBtn.click());
+}
+
+function showScreen(name){
+  if(typeof labCleanup === 'function'){ labCleanup(); labCleanup = null; }
+  Object.values(screens).forEach(s=>s.classList.remove('active'));
+  screens[name].classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+backBtn.addEventListener('click', ()=>{
+  if(screens.cycle.classList.contains('active') || screens.lab.classList.contains('active')){
+    const r = state.cycleReturn || {screen:'home', title:'مختبر العلوم ثلاثي الأبعاد', sub:'الصف الرابع • الفصلان الدراسيان'};
+    headerTitle.textContent = r.title;
+    headerSub.textContent = r.sub;
+    if(r.screen==='home') backBtn.classList.remove('show');
+    showScreen(r.screen);
+  } else if(screens.quiz.classList.contains('active')){
+    headerTitle.textContent = state.lesson.title;
+    headerSub.textContent = state.unit.title;
+    showScreen('lesson');
+  } else if(screens.search.classList.contains('active')){
+    headerTitle.textContent = 'مختبر العلوم ثلاثي الأبعاد';
+    headerSub.textContent = 'الصف الرابع • الفصلان الدراسيان';
+    backBtn.classList.remove('show');
+    searchInput.value='';
+    showScreen('home');
+  } else if(screens.lesson.classList.contains('active')){
+    headerTitle.textContent = state.unit.title;
+    headerSub.textContent = 'اختر درسًا لاستكشاف مفاهيمه';
+    showScreen('unit');
+  } else {
+    headerTitle.textContent = 'مختبر العلوم ثلاثي الأبعاد';
+    headerSub.textContent = 'الصف الرابع • الفصلان الدراسيان';
+    backBtn.classList.remove('show');
+    showScreen('home');
+  }
+});
+
+/* ===== Life cycle 3D wheel ===== */
+const cycleTitle = document.getElementById('cycleTitle');
+const cycleWheel = document.getElementById('cycleWheel');
+const cycleHub = document.getElementById('cycleHub');
+const cycleInfo = document.getElementById('cycleInfo');
+const cyclePrev = document.getElementById('cyclePrev');
+const cycleNext = document.getElementById('cycleNext');
+let cycleState = { topic:null, accent:null, active:0 };
+
+function openCycle(topic, accent, returnInfo){
+  cycleState.topic = topic;
+  cycleState.accent = accent || '#2e7d32';
+  cycleState.active = 0;
+  state.cycleReturn = returnInfo;
+  headerTitle.textContent = topic.term;
+  headerSub.textContent = topic.tag || 'دورة حياة ثلاثية الأبعاد';
+  backBtn.classList.add('show');
+  cycleTitle.textContent = topic.term + (topic.en? ' · '+topic.en : '');
+  cycleWheel.style.setProperty('--accent', cycleState.accent);
+  renderCycleNodes();
+  setActiveStage(0);
+  showScreen('cycle');
+}
+
+function renderCycleNodes(){
+  // remove old nodes
+  [...cycleWheel.querySelectorAll('.cycle-node')].forEach(n=>n.remove());
+  const stages = cycleState.topic.stages;
+  const n = stages.length;
+  const radiusPct = 42; // relative to wheel box
+  stages.forEach((s,i)=>{
+    const angle = (360/n)*i - 90; // start at top
+    const rad = angle * Math.PI/180;
+    const x = 50 + radiusPct*Math.cos(rad);
+    const y = 50 + radiusPct*Math.sin(rad);
+    const node = document.createElement('div');
+    node.className = 'cycle-node';
+    node.style.setProperty('--accent', cycleState.accent);
+    node.style.left = x+'%';
+    node.style.top = y+'%';
+    node.innerHTML = `${s.icon}<span class="snum">${i+1}</span>`;
+    node.addEventListener('click', ()=> setActiveStage(i));
+    cycleWheel.appendChild(node);
+  });
+}
+
+function setActiveStage(i){
+  cycleState.active = i;
+  const stages = cycleState.topic.stages;
+  const s = stages[i];
+  [...cycleWheel.querySelectorAll('.cycle-node')].forEach((n,idx)=> n.classList.toggle('active', idx===i));
+  cycleHub.textContent = s.icon;
+  cycleHub.style.setProperty('--accent', cycleState.accent);
+  cycleHub.classList.remove('pulse'); void cycleHub.offsetWidth; cycleHub.classList.add('pulse');
+  cycleInfo.style.setProperty('--accent', cycleState.accent);
+  cycleInfo.innerHTML = `
+    <h4>${i+1}. ${s.name}</h4>
+    <div class="en">${s.en||''}</div>
+    <p>${s.desc}</p>`;
+}
+
+cyclePrev.addEventListener('click', ()=>{
+  const n = cycleState.topic.stages.length;
+  setActiveStage((cycleState.active - 1 + n) % n);
+});
+cycleNext.addEventListener('click', ()=>{
+  const n = cycleState.topic.stages.length;
+  setActiveStage((cycleState.active + 1) % n);
+});
+
+/* ================= المختبرات والألعاب التفاعلية ثلاثية الأبعاد ================= */
+const labBody = document.getElementById('labBody');
+const labTitle = document.getElementById('labTitle');
+let labCleanup = null;
+const LABS = {};
+
+function openLab(t, accent, returnInfo){
+  state.cycleReturn = returnInfo;
+  headerTitle.textContent = t.term;
+  headerSub.textContent = 'لعبة / مختبر تفاعلي ثلاثي الأبعاد';
+  backBtn.classList.add('show');
+  labTitle.textContent = t.term + (t.en ? ' · ' + t.en : '');
+  labBody.style.setProperty('--accent', accent || '#2e7d32');
+  labBody.innerHTML = '';
+  showScreen('lab');
+  if(LABS[t.lab]) LABS[t.lab](labBody, t);
+}
+function tabsHTML(list, active){
+  return '<div class="lab-tabs">' + list.map(x => `<button class="lab-tab ${x[0]===active?'active':''}" data-m="${x[0]}">${x[1]}</button>`).join('') + '</div>';
+}
+function bindTabs(root, onPick){
+  const tabs = [...root.querySelectorAll('.lab-tab')];
+  tabs.forEach(b => b.addEventListener('click', () => { tabs.forEach(x => x.classList.toggle('active', x===b)); onPick(b.dataset.m); }));
+}
+
+/* ---------- 1) مختبر الظل ---------- */
+LABS.shadow = function(root){
+  root.innerHTML = tabsHTML([['screen','الجسم والشاشة'],['sun','الشمس خلال النهار']], 'screen') + '<div id="shArea"></div>';
+  const area = root.querySelector('#shArea');
+  bindTabs(root, m => m==='screen' ? drawScreen() : drawSun());
+  const NOTES = {
+    o:'الجسم المعتم يمنع الضوء من المرور؛ فيتكوّن خلفه ظل داكن على الشاشة.',
+    tr:'الجسم شبه الشفاف يسمح بمرور جزء من الضوء؛ فيتكوّن ظل باهت.',
+    t:'الجسم الشفاف يسمح بمرور الضوء؛ فلا يتكوّن ظل واضح.'
+  };
+  function drawScreen(){
+    let d = 25, mat = 'o';
+    area.innerHTML = `
+    <div class="lab-stage" style="background:linear-gradient(#262a45,#3f4572)">
+      <svg viewBox="0 0 100 270" preserveAspectRatio="none" width="100%" height="270" style="position:absolute;inset:0">
+        <polygon id="cone" fill="rgba(255,235,120,.32)"/>
+        <polygon id="wedge"/>
+        <rect x="88" y="0" width="7" height="236" fill="#f4f1ea"/>
+        <rect id="patch" x="88" width="7" fill="#000"/>
+      </svg>
+      <div id="lamp" style="position:absolute;bottom:43px;font-size:48px;line-height:1;transform:translateX(-50%);filter:drop-shadow(0 0 16px #ffe066)">💡</div>
+      <div id="obj" style="position:absolute;bottom:34px;left:55%;width:36px;height:64px;transform:translateX(-50%);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 6px 12px rgba(0,0,0,.4)">🧸</div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:34px;background:linear-gradient(#7a5a40,#4b3626)"></div>
+    </div>
+    <div class="lab-controls">
+      <label>بُعد مصدر الضوء عن الجسم: <span id="dv"></span> سم</label>
+      <input type="range" id="sl" min="15" max="49" value="${d}">
+      <label>نوع مادة الجسم:</label>
+      <div class="lab-btns">
+        <button class="lab-btn alt" data-k="t">شفاف</button>
+        <button class="lab-btn alt" data-k="tr">شبه شفاف</button>
+        <button class="lab-btn alt" data-k="o">معتم</button>
+      </div>
+    </div>
+    <div class="lab-note" id="nt"></div>`;
+    const $ = s => area.querySelector(s);
+    function upd(){
+      const xl = 55 - d, r = (33 + d) / d;
+      const yTop = 204 - 32 * r;
+      $('#lamp').style.left = xl + '%';
+      $('#cone').setAttribute('points', `${xl},204 88,0 88,236`);
+      const op = {o:.65, tr:.28, t:0}[mat];
+      $('#wedge').setAttribute('points', `55,172 88,${yTop} 88,236 55,236`);
+      $('#wedge').setAttribute('fill', `rgba(0,0,0,${op})`);
+      $('#patch').setAttribute('y', yTop); $('#patch').setAttribute('height', 236 - yTop);
+      $('#patch').setAttribute('opacity', {o:.8, tr:.32, t:0}[mat]);
+      const ob = $('#obj');
+      ob.style.background = {o:'#8d6e63', tr:'rgba(120,120,170,.55)', t:'rgba(190,225,245,.35)'}[mat];
+      ob.style.opacity = {o:1, tr:.8, t:.7}[mat];
+      $('#dv').textContent = d;
+      const hcm = Math.round((236 - yTop) / 4);
+      $('#nt').innerHTML = NOTES[mat] + (mat==='t' ? '' : `<br><b>بُعد المصدر ${d} سم ← ارتفاع الظل ≈ ${hcm} سم.</b> كلما ابتعد مصدر الضوء عن الجسم قصر الظل.`);
+      [...area.querySelectorAll('.lab-btn')].forEach(b => b.classList.toggle('sel', b.dataset.k===mat));
+    }
+    $('#sl').addEventListener('input', e => { d = +e.target.value; upd(); });
+    [...area.querySelectorAll('.lab-btn')].forEach(b => b.addEventListener('click', () => { mat = b.dataset.k; upd(); }));
+    upd();
+  }
+  function drawSun(){
+    let tm = 9;
+    area.innerHTML = `
+    <div class="lab-stage" style="background:linear-gradient(#7ec8ff,#e8f6ff)">
+      <div id="sun" style="position:absolute;font-size:54px;line-height:1;transform:translateX(-50%);filter:drop-shadow(0 0 20px #ffd54f)">☀️</div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(#7cb342,#558b2f)"></div>
+      <div id="sd" style="position:absolute;bottom:58px;height:16px;border-radius:50%;background:rgba(0,0,0,.5);filter:blur(3px)"></div>
+      <div style="position:absolute;bottom:60px;left:50%;transform:translateX(-50%);font-size:80px;line-height:1">🌳</div>
+    </div>
+    <div class="lab-controls">
+      <label>الوقت من النهار: <span id="tv"></span></label>
+      <input type="range" id="sl" min="7" max="17" step="0.5" value="${tm}">
+    </div>
+    <div class="lab-note" id="nt"></div>`;
+    const $ = s => area.querySelector(s);
+    function upd(){
+      const e = 90 * Math.sin(Math.PI * (tm - 6) / 12);
+      const L = Math.max(22, Math.min(230, 80 / Math.tan(e * Math.PI / 180)));
+      $('#sun').style.left = (8 + 84 * (tm - 6) / 12) + '%';
+      $('#sun').style.top = (150 - (e / 90) * 125) + 'px';
+      const sd = $('#sd'); sd.style.width = L + 'px';
+      sd.style.left = tm < 12 ? '50%' : (tm === 12 ? 'calc(50% - ' + (L/2) + 'px)' : 'calc(50% - ' + L + 'px)');
+      const h = Math.floor(tm), mn = tm % 1 ? '30' : '00';
+      $('#tv').textContent = (h > 12 ? h - 12 : h) + ':' + mn + (tm < 12 ? ' صباحًا' : ' مساءً');
+      $('#nt').textContent = tm < 10 ? 'في الصباح تكون أشعة الشمس مائلة، فيكون الظل طويلًا.'
+        : (tm <= 14 ? 'قرب الظهيرة تقترب الأشعة من الوضع العمودي، فيكون الظل أقصر ما يمكن.'
+        : 'في المساء تميل الأشعة من جديد، فيعود الظل طويلًا في الجهة المقابلة للشمس.');
+    }
+    $('#sl').addEventListener('input', e => { tm = +e.target.value; upd(); });
+    upd();
+  }
+  drawScreen();
+};
+
+/* ---------- 2) مختبر الليل والنهار (الأرض من فوق القطب الشمالي) ---------- */
+LABS.daynight = function(root){
+  let h = 9, timer = null;
+  root.innerHTML = `
+  <div class="lab-stage" style="height:290px;background:radial-gradient(circle at 8% 50%,#ffe9a8,#1b2340 62%)">
+    <svg viewBox="0 0 360 290" width="100%" height="100%">
+      <defs>
+        <radialGradient id="sunG"><stop offset="0" stop-color="#fff7c2"/><stop offset="1" stop-color="#ffb300" stop-opacity="0"/></radialGradient>
+        <radialGradient id="ocean" cx="35%" cy="30%"><stop offset="0" stop-color="#7fd0ff"/><stop offset="1" stop-color="#0b4f9c"/></radialGradient>
+        <linearGradient id="night" x1="0" x2="1" y1="0" y2="0"><stop offset=".5" stop-color="#050a1f" stop-opacity="0"/><stop offset=".53" stop-color="#050a1f" stop-opacity=".78"/><stop offset="1" stop-color="#050a1f" stop-opacity=".92"/></linearGradient>
+        <clipPath id="ec"><circle cx="225" cy="145" r="92"/></clipPath>
+      </defs>
+      <circle cx="18" cy="145" r="90" fill="url(#sunG)"/>
+      <text x="-6" y="165" font-size="64">☀️</text>
+      <g stroke="#ffd54f" stroke-width="3" opacity=".85" stroke-linecap="round">
+        <line x1="86" y1="100" x2="120" y2="108"/><line x1="92" y1="145" x2="126" y2="145"/><line x1="86" y1="190" x2="120" y2="182"/>
+      </g>
+      <circle cx="225" cy="145" r="92" fill="url(#ocean)"/>
+      <g clip-path="url(#ec)"><g id="spin">
+        <ellipse cx="185" cy="100" rx="30" ry="17" fill="#4caf50"/><ellipse cx="262" cy="108" rx="24" ry="14" fill="#66bb6a"/>
+        <ellipse cx="228" cy="188" rx="32" ry="18" fill="#43a047"/><ellipse cx="165" cy="155" rx="16" ry="26" fill="#558b2f"/>
+        <ellipse cx="296" cy="165" rx="14" ry="22" fill="#4caf50"/><ellipse cx="225" cy="62" rx="20" ry="10" fill="#81c784"/>
+        <circle id="pin" cx="317" cy="145" r="10" fill="#e53935" stroke="#fff" stroke-width="3"/>
+      </g></g>
+      <circle cx="225" cy="145" r="92" fill="url(#night)"/>
+      <circle cx="225" cy="145" r="92" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2"/>
+      <circle cx="225" cy="145" r="5" fill="#fff"/>
+      <text x="225" y="133" font-size="13" fill="#fff" text-anchor="middle" font-weight="700">القطب الشمالي</text>
+      <path d="M 225 36 A 109 109 0 0 0 116 145" fill="none" stroke="#ffd54f" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 9"/>
+      <polygon points="108,138 124,138 116,154" fill="#ffd54f"/>
+      <text x="140" y="60" font-size="13" fill="#ffd54f" font-weight="700">اتجاه الدوران</text>
+    </svg>
+  </div>
+  <div class="lab-controls">
+    <label>الساعة: <span id="hv"></span></label>
+    <input type="range" id="sl" min="0" max="24" step="0.25" value="${h}">
+    <div class="lab-btns"><button class="lab-btn" id="play">▶ تشغيل دوران الأرض</button></div>
+  </div>
+  <div class="lab-note" id="nt"></div>`;
+  const $ = s => root.querySelector(s);
+  function upd(){
+    $('#spin').setAttribute('transform', `rotate(${-h * 15} 225 145)`);
+    const day = h > 6 && h < 18;
+    const hh = Math.floor(h) % 24, mm = Math.round((h % 1) * 60);
+    $('#hv').textContent = (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm + (day ? '  ☀️ نهار' : '  🌙 ليل');
+    $('#nt').innerHTML = (day ? 'موقع الدبوس الأحمر (بلدي) <b>مواجه للشمس</b>؛ لذا يكون الوقت <b>نهارًا</b>.' : 'موقع الدبوس الأحمر (بلدي) <b>غير مواجه للشمس</b>؛ لذا يكون الوقت <b>ليلًا</b>.')
+      + '<br>تكمل الأرض دورة كاملة حول محورها كل <b>24 ساعة</b>، فيتعاقب الليل والنهار.';
+    $('#sl').value = h;
+  }
+  $('#sl').addEventListener('input', e => { h = +e.target.value; upd(); });
+  $('#play').addEventListener('click', () => {
+    if(timer){ clearInterval(timer); timer = null; $('#play').textContent = '▶ تشغيل دوران الأرض'; return; }
+    $('#play').textContent = '⏸ إيقاف';
+    timer = setInterval(() => { h = (h + 0.1) % 24; upd(); }, 60);
+  });
+  labCleanup = () => { if(timer) clearInterval(timer); };
+  upd();
+};
+
+/* ---------- 3) مختبر الفصول: الأرض تدور حول الشمس ---------- */
+LABS.orbit = function(root){
+  let th = 90, target = null, score = 0;
+  const SEA = [
+    {k:'winter', n:'الشتاء', e:'❄️', test:a => a < 45 || a >= 315, tilt:'يميل نصف الكرة الشمالي بعيدًا عن الشمس؛ فيكون النهار قصيرًا.'},
+    {k:'spring', n:'الربيع', e:'🌸', test:a => a >= 45 && a < 135, tilt:'فصل انتقالي: لا يميل نصف الكرة الشمالي نحو الشمس ولا بعيدًا عنها.'},
+    {k:'summer', n:'الصيف', e:'☀️', test:a => a >= 135 && a < 225, tilt:'يميل نصف الكرة الشمالي نحو الشمس؛ فيكون النهار طويلًا.'},
+    {k:'autumn', n:'الخريف', e:'🍁', test:a => a >= 225 && a < 315, tilt:'فصل انتقالي: لا يميل نصف الكرة الشمالي نحو الشمس ولا بعيدًا عنها.'}
+  ];
+  const Q = [
+    {k:'summer', q:'ضعي الأرض حيث يميل نصف الكرة الشمالي نحو الشمس.'},
+    {k:'winter', q:'ضعي الأرض حيث يميل نصف الكرة الشمالي بعيدًا عن الشمس ويكون النهار قصيرًا.'},
+    {k:'spring', q:'ضعي الأرض في فصل الربيع.'},
+    {k:'autumn', q:'ضعي الأرض في فصل الخريف.'}
+  ];
+  root.innerHTML = `
+  <div class="lab-stage" style="height:300px;background:radial-gradient(circle at 50% 50%,#2c3563,#0c1030 75%)">
+    <svg viewBox="0 0 360 300" width="100%" height="100%">
+      <defs>
+        <radialGradient id="sunG2"><stop offset="0" stop-color="#fff7c2"/><stop offset=".5" stop-color="#ffc107"/><stop offset="1" stop-color="#ff6f00" stop-opacity="0"/></radialGradient>
+        <radialGradient id="earthG" cx="35%" cy="30%"><stop offset="0" stop-color="#8bdcff"/><stop offset="1" stop-color="#0b4f9c"/></radialGradient>
+      </defs>
+      <ellipse cx="180" cy="150" rx="135" ry="105" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2" stroke-dasharray="6 7"/>
+      <circle cx="180" cy="150" r="46" fill="url(#sunG2)"/>
+      <text x="180" y="163" font-size="34" text-anchor="middle">☀️</text>
+      <g font-size="14" fill="#ffd54f" font-weight="700" text-anchor="middle">
+        <text x="180" y="30">ربيع</text><text x="26" y="154">صيف</text><text x="180" y="288">خريف</text><text x="336" y="154">شتاء</text>
+      </g>
+      <g id="earth"></g>
+    </svg>
+  </div>
+  <div class="lab-controls">
+    <label>حرّكي الأرض في مدارها حول الشمس</label>
+    <input type="range" id="sl" min="0" max="359" value="${th}">
+    <div class="lab-btns"><button class="lab-btn" id="chal">🎯 تحدٍّ جديد</button><button class="lab-btn alt" id="chk" style="display:none">تحقّق</button></div>
+  </div>
+  <div class="lab-note" id="nt"></div>`;
+  const $ = s => root.querySelector(s);
+  function upd(){
+    const ex = 180 + 135 * Math.cos(th * Math.PI / 180), ey = 150 - 105 * Math.sin(th * Math.PI / 180);
+    const phi = Math.atan2(150 - ey, 180 - ex) * 180 / Math.PI;
+    const tx = 12, ty = 27;
+    $('#earth').innerHTML = `
+      <g transform="translate(${ex} ${ey})">
+        <circle r="19" fill="url(#earthG)"/>
+        <path d="M 0,-19 A 19,19 0 0 1 0,19 Z" fill="rgba(0,0,30,.6)" transform="rotate(${phi + 180})"/>
+        <line x1="${-tx}" y1="${ty}" x2="${tx}" y2="${-ty}" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+        <text x="${tx + 6}" y="${-ty - 4}" font-size="12" fill="#fff" font-weight="700">N</text>
+      </g>`;
+    const s = SEA.find(x => x.test(th));
+    $('#nt').innerHTML = (target ? `<b>🎯 ${target.q}</b><br>` : '') + `الفصل الآن: <b>${s.e} ${s.n}</b><br>${s.tilt}<br><small>يحافظ محور الأرض على ميله باتجاه ثابت أثناء دورانها حول الشمس.</small>` + (score ? `<br>⭐ نقاطك: ${score}` : '');
+  }
+  $('#sl').addEventListener('input', e => { th = +e.target.value; upd(); });
+  $('#chal').addEventListener('click', () => { target = Q[Math.floor(Math.random() * Q.length)]; $('#chk').style.display = 'inline-block'; upd(); });
+  $('#chk').addEventListener('click', () => {
+    if(!target) return;
+    const s = SEA.find(x => x.test(th));
+    if(s.k === target.k){ score++; upd(); $('#nt').innerHTML = '🎉 أحسنتِ! الإجابة صحيحة. ' + $('#nt').innerHTML; target = null; $('#chk').style.display = 'none'; }
+    else { $('#nt').innerHTML = '🤔 حاولي مرة أخرى؛ لاحظي ميل محور الأرض بالنسبة إلى الشمس.<br>' + $('#nt').innerHTML; }
+  });
+  upd();
+};
+
+/* ---------- 4) مختبر الدارة الكهربائية ---------- */
+LABS.circuit = function(root, t){
+  let mode = t.mode || 'switch', closed = false, mat = null;
+  const MATS = [
+    ['نحاس','🟠',1],['ألمنيوم','🥫',1],['ذهب','🥇',1],['حديد','🔩',1],['ماء الصنبور','🚰',1],
+    ['خشب','🪵',0],['زجاج','🥃',0],['بلاستيك','🧴',0],['مطاط','🧤',0]
+  ];
+  root.innerHTML = tabsHTML([['switch','الدارة والمفتاح'],['material','موصلة أم عازلة؟']], mode) + '<div id="cArea"></div>';
+  const area = root.querySelector('#cArea');
+  bindTabs(root, m => { mode = m; draw(); });
+  function svg(lit){
+    const full = 'M60 100 V50 H300 V210 H60 V140';
+    let sw = '';
+    if(mode === 'switch'){
+      sw = closed ? '<line x1="135" y1="210" x2="225" y2="210" stroke="#d84315" stroke-width="8" stroke-linecap="round"/>'
+                  : '<line x1="135" y1="210" x2="210" y2="160" stroke="#d84315" stroke-width="8" stroke-linecap="round"/>';
+    } else if(mat){
+      sw = `<rect x="140" y="192" width="80" height="36" rx="10" fill="#fff" stroke="#607d8b" stroke-width="3"/><text x="180" y="219" font-size="26" text-anchor="middle">${mat[1]}</text>`;
+    }
+    return `<svg viewBox="0 0 360 250" width="100%" height="100%">
+      <defs>
+        <radialGradient id="glow"><stop offset="0" stop-color="#fff9c4"/><stop offset="1" stop-color="#ffeb3b" stop-opacity="0"/></radialGradient>
+        <linearGradient id="bat" x1="0" x2="1"><stop offset="0" stop-color="#ffb74d"/><stop offset="1" stop-color="#e65100"/></linearGradient>
+      </defs>
+      ${lit ? '<circle cx="180" cy="34" r="62" fill="url(#glow)"/>' : ''}
+      <path d="M60 100 V50 H300 V210 H225 M135 210 H60 V140" fill="none" stroke="#37474f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+      ${lit ? `<path class="flow" d="${full}"/>` : ''}
+      <rect x="36" y="100" width="48" height="40" rx="8" fill="url(#bat)" stroke="#bf360c" stroke-width="2"/>
+      <text x="60" y="119" text-anchor="middle" font-size="17" fill="#fff" font-weight="800">+</text>
+      <text x="60" y="136" text-anchor="middle" font-size="17" fill="#fff" font-weight="800">−</text>
+      <rect x="170" y="52" width="20" height="10" rx="2" fill="#78909c"/>
+      <circle cx="180" cy="32" r="23" fill="${lit ? '#fff176' : '#eceff1'}" stroke="#90a4ae" stroke-width="3"/>
+      <circle cx="135" cy="210" r="8" fill="#263238"/><circle cx="225" cy="210" r="8" fill="#263238"/>
+      ${sw}
+    </svg>`;
+  }
+  function draw(){
+    if(mode === 'switch'){
+      area.innerHTML = `
+      <div class="lab-stage" style="height:260px;background:linear-gradient(#e8eaf6,#c5cae9)"><div id="sv" style="position:absolute;inset:0"></div></div>
+      <div class="lab-controls">
+        <div class="lab-btns"><button class="lab-btn" id="tg"></button></div>
+        <div style="margin-top:10px;font-size:16px;line-height:1.9">🔋 مصدر كهربائي (بطارية) &nbsp; 💡 مصباح &nbsp; 〰️ أسلاك &nbsp; 🔘 مفتاح</div>
+      </div>
+      <div class="lab-note" id="nt"></div>`;
+      const upd = () => {
+        area.querySelector('#sv').innerHTML = svg(closed);
+        area.querySelector('#tg').textContent = closed ? '🔓 افتحي المفتاح' : '🔒 أغلقي المفتاح';
+        area.querySelector('#nt').innerHTML = closed
+          ? '<b>الدارة مغلقة:</b> المسار مغلق فتتحرك الشحنات الكهربائية باتجاه واحد، فينشأ <b>تيار كهربائي</b> ويضيء المصباح.'
+          : '<b>الدارة مفتوحة:</b> يوجد انقطاع في المسار، فلا ينشأ تيار كهربائي والمصباح مطفأ.';
+      };
+      area.querySelector('#tg').addEventListener('click', () => { closed = !closed; upd(); });
+      upd();
+    } else {
+      area.innerHTML = `
+      <div class="lab-stage" style="height:260px;background:linear-gradient(#e8eaf6,#c5cae9)"><div id="sv" style="position:absolute;inset:0"></div></div>
+      <div class="lab-controls"><label>اختاري مادة لتضعيها في الفجوة بين الطرفين:</label>
+        <div class="mat-grid">${MATS.map((m,i) => `<button class="mat-btn" data-i="${i}"><span class="e">${m[1]}</span>${m[0]}</button>`).join('')}</div>
+      </div>
+      <div class="lab-note" id="nt">اختاري مادة وراقبي المصباح.</div>`;
+      const upd = () => {
+        const lit = !!(mat && mat[2]);
+        area.querySelector('#sv').innerHTML = svg(lit);
+        [...area.querySelectorAll('.mat-btn')].forEach(b => b.classList.toggle('sel', mat && MATS[+b.dataset.i] === mat));
+        if(mat) area.querySelector('#nt').innerHTML = `<b>${mat[0]}</b>: ` + (mat[2] ? 'مادة <b>موصلة</b> للكهرباء؛ فمرّ التيار وأضاء المصباح.' : 'مادة <b>عازلة</b>؛ فلم يمرّ التيار وبقي المصباح مطفأ.');
+      };
+      [...area.querySelectorAll('.mat-btn')].forEach(b => b.addEventListener('click', () => { mat = MATS[+b.dataset.i]; upd(); }));
+      upd();
+    }
+  }
+  draw();
+};
+
+/* ---------- 5) مختبر الطاقة: طاقة الوضع والطاقة الحركية ---------- */
+LABS.energy = function(root){
+  let h0 = 6, y = 6, running = false, raf = 0;
+  const K = 22;
+  let ticks = '';
+  for(let m = 0; m <= 10; m += 2) ticks += `<div style="position:absolute;left:10px;bottom:${30 + m*K}px;width:26px;border-top:2px solid #607d8b"></div><div style="position:absolute;left:40px;bottom:${22 + m*K}px;font-size:14px;color:#37474f;font-weight:700">${m} م</div>`;
+  root.innerHTML = `
+  <div class="lab-stage" style="height:300px;background:linear-gradient(#cfe9ff,#f3faff)">
+    ${ticks}
+    <div style="position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(#6d4c41,#4e342e)"></div>
+    <div id="ball" style="position:absolute;left:30%;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#ff8a80,#d32f2f 70%);box-shadow:0 8px 14px rgba(0,0,0,.3),inset -5px -6px 10px rgba(0,0,0,.25)"></div>
+    <div style="position:absolute;right:5%;bottom:30px;top:16px;width:40%;display:flex;gap:14%;align-items:flex-end;justify-content:center">
+      <div style="flex:1;text-align:center"><div id="bpe" style="width:100%;border-radius:10px 10px 0 0;background:linear-gradient(#26a69a,#00695c);height:0"></div><div style="font-size:14px;font-weight:800;margin-top:4px">طاقة الوضع</div></div>
+      <div style="flex:1;text-align:center"><div id="bke" style="width:100%;border-radius:10px 10px 0 0;background:linear-gradient(#ffb74d,#e65100);height:0"></div><div style="font-size:14px;font-weight:800;margin-top:4px">الطاقة الحركية</div></div>
+    </div>
+  </div>
+  <div class="lab-controls">
+    <label>ارتفاع الكرة عن الأرض: <span id="hv"></span> م</label>
+    <input type="range" id="sl" min="1" max="10" step="0.5" value="${h0}">
+    <div class="lab-btns"><button class="lab-btn" id="go">⬇ أسقطي الكرة</button><button class="lab-btn alt" id="rs">↺ إعادة</button></div>
+  </div>
+  <div class="lab-note" id="nt"></div>`;
+  const $ = s => root.querySelector(s);
+  function paint(){
+    $('#ball').style.bottom = (30 + y * K) + 'px';
+    $('#bpe').style.height = (y / 10 * 215) + 'px';
+    $('#bke').style.height = ((h0 - y) / 10 * 215) + 'px';
+    $('#hv').textContent = h0;
+  }
+  function msg(s){ $('#nt').innerHTML = s; }
+  function reset(){ cancelAnimationFrame(raf); running = false; y = h0; paint(); msg('الكرة الساكنة المرفوعة عن الأرض تمتلك <b>طاقة وضع</b> بسبب ارتفاعها. كلما ارتفعت أكثر زادت طاقة الوضع.'); }
+  $('#sl').addEventListener('input', e => { if(running) return; h0 = +e.target.value; y = h0; paint(); msg('الكرة الساكنة المرفوعة عن الأرض تمتلك <b>طاقة وضع</b> بسبب ارتفاعها. كلما ارتفعت أكثر زادت طاقة الوضع.'); });
+  $('#rs').addEventListener('click', reset);
+  $('#go').addEventListener('click', () => {
+    if(running) return; running = true; y = h0; const t0 = performance.now();
+    msg('أثناء السقوط <b>تتحول طاقة الوضع إلى طاقة حركية</b>؛ فتقلّ طاقة الوضع وتزداد الطاقة الحركية.');
+    (function step(now){
+      const t = (now - t0) / 1000 * 0.8;
+      y = Math.max(0, h0 - 4.9 * t * t);
+      paint();
+      if(y > 0) raf = requestAnimationFrame(step);
+      else { running = false; msg('عند وصول الكرة إلى الأرض تكون طاقة الوضع قد تحوّلت كلها تقريبًا إلى طاقة حركية. جرّبي ارتفاعًا آخر!'); }
+    })(t0);
+  });
+  labCleanup = () => cancelAnimationFrame(raf);
+  paint(); reset();
+};
+
+/* ---------- 6) مختبر المغانط ---------- */
+LABS.magnet = function(root){
+  let flip = false, near = false;
+  root.innerHTML = `
+  <div class="lab-stage" style="height:300px;background:linear-gradient(#eceff1,#cfd8dc);direction:ltr">
+    <div id="lbl" style="position:absolute;top:14px;left:0;right:0;text-align:center;font-size:21px;font-weight:800"></div>
+    <div id="row" style="position:absolute;top:70px;left:0;right:0;display:flex;justify-content:center;align-items:center"></div>
+    <div id="row2" style="position:absolute;top:190px;left:0;right:0;display:flex;justify-content:center;align-items:center"></div>
+  </div>
+  <div class="lab-controls"><div class="lab-btns">
+    <button class="lab-btn" id="fl">🔄 اقلبي المغناطيس الثاني</button>
+    <button class="lab-btn alt" id="nr">📎 قرّبي المشبك الحديدي</button>
+  </div></div>
+  <div class="lab-note" id="nt"></div>`;
+  const $ = s => root.querySelector(s);
+  const mag = (a, b) => `<div style="display:flex;border-radius:10px;overflow:hidden;box-shadow:0 8px 14px rgba(0,0,0,.3);font-size:26px;font-weight:900;color:#fff"><div style="width:62px;height:48px;display:flex;align-items:center;justify-content:center;background:${a==='N'?'linear-gradient(#ef5350,#b71c1c)':'linear-gradient(#42a5f5,#0d47a1)'}">${a}</div><div style="width:62px;height:48px;display:flex;align-items:center;justify-content:center;background:${b==='N'?'linear-gradient(#ef5350,#b71c1c)':'linear-gradient(#42a5f5,#0d47a1)'}">${b}</div></div>`;
+  function upd(){
+    const bPoles = flip ? ['N','S'] : ['S','N'];
+    const attract = !flip;
+    const gap = attract ? 18 : 130;
+    $('#row').innerHTML = mag('S','N') + `<div style="width:${gap}px;transition:width .6s;text-align:center;font-size:30px;font-weight:900;color:${attract?'#2e7d32':'#c62828'};white-space:nowrap">${attract ? '→ ←' : '← →'}</div>` + mag(bPoles[0], bPoles[1]);
+    $('#lbl').style.color = attract ? '#2e7d32' : '#c62828';
+    $('#lbl').textContent = attract ? 'القطبان مختلفان: تجاذب 🤝' : 'القطبان متشابهان: تنافر ↔️';
+    $('#row2').innerHTML = mag('S','N') + `<div style="width:${near ? 8 : 150}px;transition:width .7s"></div><div style="font-size:40px;line-height:1">📎</div>`;
+    $('#nt').innerHTML = (attract ? 'عند تقريب قطبين <b>غير متشابهين</b> (N مع S) يتجاذبان.' : 'عند تقريب قطبين <b>متشابهين</b> (N مع N) يتنافران.')
+      + '<br>تُسمّى القوة التي يؤثر بها المغناطيس <b>القوة المغناطيسية</b>، وهي <b>قوة تأثير عن بعد</b>.'
+      + (near ? '<br>🧲 جذب المغناطيس المشبك الحديدي إليه من دون أن يلامسه.' : '');
+  }
+  $('#fl').addEventListener('click', () => { flip = !flip; upd(); });
+  $('#nr').addEventListener('click', () => { near = !near; $('#nr').textContent = near ? '📎 أبعدي المشبك' : '📎 قرّبي المشبك الحديدي'; upd(); });
+  upd();
+};
+
+/* ---------- 7) لعبة التصنيف ---------- */
+const SORTS = {
+  light:{ title:'صنّفي المادة حسب مرور الضوء خلالها', cats:[{k:'t',l:'شفافة',e:'🪟'},{k:'tr',l:'شبه شفافة',e:'🕶️'},{k:'o',l:'معتمة',e:'🚪'}], items:[
+    {n:'زجاج النافذة',e:'🪟',k:'t',w:'يمر الضوء خلاله فنرى الأشياء بوضوح.'},
+    {n:'الماء الصافي',e:'💧',k:'t',w:'يمر الضوء خلاله فنرى ما وراءه بوضوح.'},
+    {n:'عدسة النظارة الشمسية',e:'🕶️',k:'tr',w:'تسمح بمرور جزء من الضوء؛ فنرى الأشياء بوضوح أقل.'},
+    {n:'باب خشبي',e:'🚪',k:'o',w:'الخشب يمنع الضوء من المرور خلاله.'},
+    {n:'قطعة حديد',e:'🔩',k:'o',w:'الحديد يمنع الضوء من المرور خلاله.'},
+    {n:'قطعة بلاستيك معتمة',e:'🧱',k:'o',w:'تمنع مرور الضوء فلا نرى ما خلفها.'} ]},
+  force:{ title:'قوة تلامس أم قوة تأثير عن بعد؟', cats:[{k:'c',l:'قوة تلامس',e:'🤝'},{k:'n',l:'قوة تأثير عن بعد',e:'🌠'}], items:[
+    {n:'احتكاك صندوق بالأرض',e:'📦',k:'c',w:'تنشأ قوة الاحتكاك عند تلامس السطحين.'},
+    {n:'شدّ سيارة القطر لسيارة معطّلة',e:'🚗',k:'c',w:'قوة الشدّ تنشأ في الحبل أو السلسلة الملامسة للجسم.'},
+    {n:'ركل لاعب للكرة',e:'⚽',k:'c',w:'القدم تلامس الكرة وتدفعها.'},
+    {n:'سقوط تفاحة نحو الأرض',e:'🍎',k:'n',w:'قوة الجاذبية الأرضية تؤثر عن بعد.'},
+    {n:'مغناطيس يجذب مسمارًا',e:'🧲',k:'n',w:'القوة المغناطيسية تؤثر من دون تلامس.'},
+    {n:'بالونان مشحونان يتنافران',e:'🎈',k:'n',w:'القوة الكهربائية تؤثر بين الأجسام المشحونة عن بعد.'} ]},
+  resource:{ title:'مورد حيوي أم مورد غير حيوي؟', cats:[{k:'b',l:'مورد حيوي',e:'🌾'},{k:'a',l:'مورد غير حيوي',e:'⛰️'}], items:[
+    {n:'الخشب',e:'🪵',k:'b',w:'نحصل عليه من الأشجار (كائنات حية).'},
+    {n:'الحليب',e:'🥛',k:'b',w:'نحصل عليه من الحيوانات.'},
+    {n:'اللحوم',e:'🥩',k:'b',w:'نحصل عليها من الحيوانات.'},
+    {n:'القطن',e:'🧶',k:'b',w:'نحصل عليه من نبات القطن.'},
+    {n:'النفط',e:'🛢️',k:'b',w:'وقود أحفوري يتكوّن من بقايا كائنات حية عاشت قبل ملايين السنين.'},
+    {n:'الماء',e:'💧',k:'a',w:'شيء غير حي في الطبيعة نحتاج إليه.'},
+    {n:'الهواء',e:'🌬️',k:'a',w:'شيء غير حي في الطبيعة نحتاج إليه.'},
+    {n:'الصخور',e:'🪨',k:'a',w:'مادة طبيعية صلبة غير حية.'},
+    {n:'الذهب (معدن)',e:'🥇',k:'a',w:'المعادن أصلها ليس من الكائنات الحية.'} ]},
+  kingdom:{ title:'إلى أي مملكة ينتمي هذا الكائن؟', cats:[{k:'m',l:'البدائيات والبكتيريا',e:'🦠'},{k:'p',l:'الطلائعيات',e:'💧'},{k:'f',l:'الفطريات',e:'🍄'},{k:'pl',l:'النباتات',e:'🌿'},{k:'an',l:'الحيوانات',e:'🐾'}], items:[
+    {n:'بكتيريا',e:'🦠',k:'m',w:'أصغر الكائنات الحية وأبسطها، تتكوّن من خلية واحدة.'},
+    {n:'براميسيوم',e:'🔬',k:'p',w:'كائن طلائعي يتكوّن من خلية واحدة.'},
+    {n:'طحالب',e:'🟢',k:'p',w:'من الطلائعيات، وبعضها يصنع غذاءه بنفسه.'},
+    {n:'فطر المشروم',e:'🍄',k:'f',w:'الفطريات لا تصنع غذاءها بنفسها.'},
+    {n:'عفن الخبز',e:'🍞',k:'f',w:'فطر ضار يعتمد في غذائه على كائنات أخرى.'},
+    {n:'شجرة صنوبر',e:'🌲',k:'pl',w:'النباتات تصنع غذاءها بنفسها.'},
+    {n:'وردة',e:'🌹',k:'pl',w:'النباتات تصنع غذاءها بنفسها.'},
+    {n:'ماعز',e:'🐐',k:'an',w:'الحيوانات تعتمد في غذائها على مخلوقات أخرى.'},
+    {n:'دودة الأرض',e:'🪱',k:'an',w:'من مملكة الحيوانات.'},
+    {n:'فراشة',e:'🦋',k:'an',w:'من مملكة الحيوانات.'} ]},
+  sense:{ title:'أي حاسة نستخدمها؟', cats:[{k:'s',l:'البصر',e:'👁️'},{k:'h',l:'السمع',e:'👂'},{k:'sm',l:'الشم',e:'👃'},{k:'tt',l:'التذوق',e:'👅'},{k:'tc',l:'اللمس',e:'✋'}], items:[
+    {n:'رؤية الأشجار الخضراء',e:'🌳',k:'s',w:'نرى بالعين (حاسة البصر).'},
+    {n:'سماع زقزقة العصافير',e:'🐦',k:'h',w:'نسمع بالأذن (حاسة السمع).'},
+    {n:'شمّ رائحة الورد',e:'🌹',k:'sm',w:'نشمّ بالأنف (حاسة الشم).'},
+    {n:'تذوق طعم السكر',e:'🍬',k:'tt',w:'نتذوق باللسان (حاسة التذوق).'},
+    {n:'الإحساس ببرودة الجليد',e:'🧊',k:'tc',w:'نحسّ باللمس بواسطة الجلد.'},
+    {n:'سماع صوت الجرس',e:'🔔',k:'h',w:'نسمع بالأذن.'},
+    {n:'شمّ رائحة الخبز',e:'🍞',k:'sm',w:'نشمّ بالأنف.'},
+    {n:'تذوق عصير الليمون',e:'🍋',k:'tt',w:'نتذوق باللسان.'} ]},
+  change:{ title:'تغير فيزيائي أم تغير كيميائي؟', cats:[{k:'p',l:'تغير فيزيائي',e:'🧊'},{k:'c',l:'تغير كيميائي',e:'🔥'}], items:[
+    {n:'ذوبان مكعب الثلج',e:'🧊',k:'p',w:'تغيّرت حالته ولم تنتج مادة جديدة.'},
+    {n:'تقطيع الورق',e:'✂️',k:'p',w:'تغيّر الشكل فقط ولم تنتج مادة جديدة.'},
+    {n:'غليان الماء',e:'🫖',k:'p',w:'تغيّرت حالة الماء ولم تنتج مادة جديدة.'},
+    {n:'احتراق الخشب',e:'🔥',k:'c',w:'تنتج مواد جديدة تختلف عن الخشب.'},
+    {n:'انتفاخ العجين بالخميرة',e:'🍞',k:'c',w:'تتكوّن فقاعات غاز؛ أي تنتج مادة جديدة.'},
+    {n:'صدأ الحديد',e:'🔩',k:'c',w:'تنتج مادة جديدة تختلف عن الحديد.'} ]},
+  relation:{ title:'ما نوع العلاقة بين الكائنين؟', cats:[{k:'pr',l:'افتراس',e:'🦁'},{k:'co',l:'تنافس',e:'⚔️'},{k:'mu',l:'تقايض',e:'🤝'},{k:'cm',l:'تعايش',e:'🐦'}], items:[
+    {n:'أسد يصطاد غزالًا',e:'🦁',k:'pr',w:'أحدهما مفترس يتغذى على الآخر (الفريسة).'},
+    {n:'ثعلب يأكل أرنبًا',e:'🦊',k:'pr',w:'الثعلب مفترس والأرنب فريسة.'},
+    {n:'نباتان من النوع نفسه على الضوء والماء',e:'🌱',k:'co',w:'يتنافسان على الضوء والماء والمأوى.'},
+    {n:'نحلة تأخذ رحيق زهرة وتنقل حبوب اللقاح',e:'🐝',k:'mu',w:'يستفيد الكائنان كلاهما.'},
+    {n:'طائر يبني عشه على شجرة',e:'🐦',k:'cm',w:'يستفيد الطائر ولا تستفيد الشجرة ولا تتضرر.'} ]}
+};
+function shuffleArr(a){ return a.map(v => [Math.random(), v]).sort((x, y) => x[0] - y[0]).map(v => v[1]); }
+
+LABS.sort = function(root, t){
+  const S = SORTS[t.set];
+  let items = shuffleArr(S.items.slice()), i = 0, score = 0, done = false;
+  const cols = S.cats.length >= 4 ? 2 : S.cats.length;
+  function draw(){
+    if(i >= items.length){
+      const pct = Math.round(score / items.length * 100);
+      root.innerHTML = `<div class="sort-card"><div style="font-size:64px">🏆</div><div class="sort-score">${score} / ${items.length}</div><div class="sort-q">${pct >= 80 ? 'ممتاز! 🌟' : (pct >= 50 ? 'جيد، حاولي مرة أخرى 👍' : 'راجعي البطاقات ثم أعيدي المحاولة 💪')}</div><div class="lab-btns" style="justify-content:center"><button class="lab-btn" id="again">↺ إعادة اللعبة</button></div></div>`;
+      root.querySelector('#again').addEventListener('click', () => { items = shuffleArr(S.items.slice()); i = 0; score = 0; draw(); });
+      return;
+    }
+    const it = items[i]; done = false;
+    root.innerHTML = `
+    <div class="sort-prog">${S.title} — السؤال ${i + 1} من ${items.length} &nbsp;|&nbsp; ⭐ ${score}</div>
+    <div class="sort-card">
+      <div class="sort-emoji">${it.e}</div>
+      <div class="sort-q">${it.n}</div>
+      <div class="sort-btns" style="grid-template-columns:repeat(${cols},1fr)">${S.cats.map(c => `<button class="sort-btn" data-k="${c.k}"><span>${c.e}</span>${c.l}</button>`).join('')}</div>
+      <div id="fb" class="sort-fb"></div>
+    </div>`;
+    [...root.querySelectorAll('.sort-btn')].forEach(b => b.addEventListener('click', () => {
+      if(done) return; done = true;
+      const ok = b.dataset.k === it.k;
+      if(ok) score++;
+      b.classList.add(ok ? 'ok' : 'bad');
+      if(!ok) root.querySelector(`.sort-btn[data-k="${it.k}"]`).classList.add('ok');
+      const fb = root.querySelector('#fb');
+      fb.className = 'sort-fb show ' + (ok ? 'ok' : 'bad');
+      fb.innerHTML = (ok ? '✅ أحسنتِ! ' : '❌ ليست الإجابة الصحيحة. ') + it.w + '<div class="lab-btns" style="margin-top:10px"><button class="lab-btn" id="nx">التالي ←</button></div>';
+      fb.querySelector('#nx').addEventListener('click', () => { i++; draw(); });
+    }));
+  }
+  draw();
+};
+
+/* ---------- 8) لعبة ترتيب المراحل ---------- */
+const ORDERS = {
+  butterfly:{ title:'رتّبي مراحل دورة حياة الفراشة', items:[['البيضة','🥚'],['اليرقة','🐛'],['الشرنقة','🟢'],['الفراشة مكتملة النمو','🦋']] },
+  frog:{ title:'رتّبي مراحل دورة حياة الضفدع', items:[['البيوض','⚪'],['أبو ذنيبة','🐟'],['الضفدع الصغير','🐸'],['الضفدع مكتمل النمو','🐸']] },
+  plant:{ title:'رتّبي مراحل دورة حياة النبات المزهر', items:[['البذور','🌰'],['الإنبات','🌱'],['النمو','🌿'],['تكوين الأوراق','🍃'],['تكوين الأزهار والبذور','🌸'],['نضج البذور','🌾']] },
+  water:{ title:'رتّبي مراحل دورة الماء في الطبيعة', items:[['التبخر','🌊'],['التكاثف','☁️'],['الهطول','🌧️'],['الجريان والتسرب','🏞️']] },
+  oil:{ title:'رتّبي مراحل تكوّن النفط', items:[['كائنات حية دقيقة في البحر','🦠'],['دفن البقايا في قاع البحر','🌊'],['تولّد الضغط والحرارة','🔥'],['التحوّل إلى نفط','🛢️']] },
+  vision:{ title:'رتّبي خطوات عملية الإبصار', items:[['انطلاق الضوء من المصدر','💡'],['سقوطه على الجسم وانعكاسه','📖'],['وصول الضوء المنعكس إلى العين','👁️']] }
+};
+LABS.order = function(root, t){
+  const O = ORDERS[t.set];
+  let pool, next, tries;
+  function start(){ pool = shuffleArr(O.items.map((x, idx) => ({n:x[0], e:x[1], idx}))); next = 0; tries = 0; draw(); }
+  function draw(){
+    const finished = next >= O.items.length;
+    root.innerHTML = `
+    <div class="sort-prog">${O.title}</div>
+    <div class="ord-slots">${O.items.map((x, idx) => `<div class="ord-slot ${idx < next ? 'fill' : ''}"><b>${idx + 1}</b>${idx < next ? `<span>${x[1]}</span><small>${x[0]}</small>` : '<small>؟</small>'}</div>`).join('')}</div>
+    ${finished ? `<div class="sort-card"><div style="font-size:60px">🎉</div><div class="sort-q">أحسنتِ! رتّبتِ المراحل بالتسلسل الصحيح${tries ? ' (محاولات خاطئة: ' + tries + ')' : ' من دون أخطاء'}.</div><div class="lab-btns" style="justify-content:center"><button class="lab-btn" id="again">↺ إعادة</button></div></div>`
+    : `<div class="lab-note" id="nt" style="margin-top:12px">اضغطي على المرحلة التي تأتي في الترتيب رقم <b>${next + 1}</b>:</div>
+    <div class="ord-pool">${pool.filter(p => p.idx >= next && !p.used).map(p => `<button class="ord-chip" data-i="${p.idx}"><span>${p.e}</span>${p.n}</button>`).join('')}</div>`}`;
+    if(finished){ root.querySelector('#again').addEventListener('click', start); return; }
+    [...root.querySelectorAll('.ord-chip')].forEach(b => b.addEventListener('click', () => {
+      if(+b.dataset.i === next){ next++; draw(); }
+      else { tries++; b.classList.add('shake'); root.querySelector('#nt').innerHTML = '🤔 ليست هذه المرحلة التالية، حاولي مرة أخرى.'; setTimeout(() => b.classList.remove('shake'), 500); }
+    }));
+  }
+  start();
+};
+
+/* ---------- 9) مختبر قياس الحجم بالإزاحة ---------- */
+LABS.volume = function(root){
+  const OBJ = [['مسمار','🔩',5],['ملعقة فلزية','🥄',25],['حجر صغير','🪨',60]];
+  let sel = null;
+  root.innerHTML = `
+  <div class="lab-stage" style="height:300px;background:linear-gradient(#eceff1,#cfd8dc)">
+    <div style="position:absolute;left:50%;transform:translateX(-50%);bottom:20px;width:120px;height:250px;border:4px solid #607d8b;border-top:none;border-radius:0 0 22px 22px;background:rgba(255,255,255,.55);overflow:hidden">
+      <div id="water" style="position:absolute;left:0;right:0;bottom:0;background:linear-gradient(#4fc3f7,#0288d1);transition:height .6s"></div>
+      <div id="item" style="position:absolute;left:50%;transform:translateX(-50%);font-size:40px;transition:bottom .6s">&#8203;</div>
+      <div style="position:absolute;right:4px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-between;padding:6px 0;font-size:12px;font-weight:700;color:#37474f"><span>200</span><span>150</span><span>100</span><span>50</span><span>0</span></div>
+    </div>
+    <div id="rd" style="position:absolute;right:14px;top:16px;background:#fff;border-radius:12px;padding:8px 12px;font-size:17px;font-weight:800;box-shadow:0 4px 10px rgba(0,0,0,.2)"></div>
+  </div>
+  <div class="lab-controls"><label>اختاري جسمًا لغمره في المخبار (يحتوي 100 مل ماء):</label>
+    <div class="mat-grid">${OBJ.map((o, i) => `<button class="mat-btn" data-i="${i}"><span class="e">${o[1]}</span>${o[0]}</button>`).join('')}<button class="mat-btn" data-i="-1"><span class="e">↺</span>أخرجي الجسم</button></div></div>
+  <div class="lab-note" id="nt"></div>`;
+  const $ = s => root.querySelector(s);
+  function upd(){
+    const v = sel ? sel[2] : 0, lvl = 100 + v;
+    $('#water').style.height = (lvl / 200 * 250) + 'px';
+    $('#item').style.bottom = sel ? '30px' : '260px'; $('#item').textContent = sel ? sel[1] : '\u200b';
+    $('#rd').textContent = 'القراءة: ' + lvl + ' مل';
+    $('#nt').innerHTML = sel ? `ارتفع مستوى الماء من 100 مل إلى ${lvl} مل. <b>حجم ${sel[0]} = ${lvl} − 100 = ${v} سم³</b>.<br><small>(قيم الأحجام هنا تقريبية لأغراض المحاكاة.)</small>` : 'الحجم: مقدار ما يشغله الجسم من حيّز. عند غمر جسم في الماء يرتفع مستوى الماء بمقدار حجمه.';
+    [...root.querySelectorAll('.mat-btn')].forEach(b => b.classList.toggle('sel', sel && OBJ[+b.dataset.i] === sel));
+  }
+  [...root.querySelectorAll('.mat-btn')].forEach(b => b.addEventListener('click', () => { sel = +b.dataset.i < 0 ? null : OBJ[+b.dataset.i]; upd(); }));
+  upd();
+};
+
+
+renderHome();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

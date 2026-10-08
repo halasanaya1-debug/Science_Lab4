@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>مختبر العلوم ثلاثي الأبعاد - الصف الرابع</title>
-<meta name="description" content="مختبر علوم تفاعلي ثلاثي الأبعاد لمنهاج الصف الرابع - الفصل الأول">
+<meta name="description" content="مختبر علوم تفاعلي ثلاثي الأبعاد لمنهاج الصف الرابع - الفصلان الأول والثاني">
 <meta name="theme-color" content="#1b5e20">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -121,10 +121,15 @@
   .unit-card h3{font-size:15px; margin:0 0 2px; font-weight:800; line-height:1.35;}
   .unit-card span.count{font-size:11px; opacity:.9;}
 
-  .u1{background:linear-gradient(145deg,var(--u1),var(--u1b));}
-  .u2{background:linear-gradient(145deg,var(--u2),var(--u2b));}
-  .u3{background:linear-gradient(145deg,var(--u3),var(--u3b));}
-  .u4{background:linear-gradient(145deg,var(--u4),var(--u4b));}
+  .unit-card{background:linear-gradient(145deg,var(--c1,#2e7d32),var(--c2,#66bb6a));}
+
+  /* ===== Semester tabs ===== */
+  .sem-tabs{display:flex; gap:8px; max-width:420px; margin:0 auto 18px; background:rgba(0,0,0,.06); padding:5px; border-radius:999px;}
+  .sem-tab{
+    flex:1; border:none; background:transparent; padding:9px 10px; border-radius:999px; cursor:pointer;
+    font-family:inherit; font-weight:800; font-size:12.5px; color:var(--ink); opacity:.55;
+  }
+  .sem-tab.active{background:var(--green); color:#fff; opacity:1; box-shadow:0 6px 14px rgba(0,0,0,.2);}
 
   /* ===== Lessons list ===== */
   .lesson-row{
@@ -309,7 +314,7 @@
     <button class="back-btn" id="backBtn" aria-label="رجوع">➜</button>
     <div class="titles">
       <h1 id="headerTitle">مختبر العلوم ثلاثي الأبعاد</h1>
-      <p id="headerSub">الصف الرابع • الفصل الدراسي الأول</p>
+      <p id="headerSub">الصف الرابع • الفصلان الدراسيان</p>
     </div>
     <div class="badge">4</div>
   </header>
@@ -325,9 +330,13 @@
       <span class="search-icon">🔎</span>
       <input id="searchInput" type="search" placeholder="ابحثي عن مفهوم... مثل: الخلية">
     </div>
+    <div class="sem-tabs" id="semTabs">
+      <button class="sem-tab" data-sem="1">الفصل الأول</button>
+      <button class="sem-tab" data-sem="2">الفصل الثاني</button>
+    </div>
     <div class="grid" id="unitsGrid"></div>
     <footer class="note">
-      مبني على كتاب الطالب ودليل المعلم لمادة العلوم - الصف الرابع - الفصل الأول<br>
+      مبني على كتاب الطالب ودليل المعلم لمادة العلوم - الصف الرابع - الفصلان الأول والثاني<br>
       المركز الوطني لتطوير المناهج والتقويم
     </footer>
   </section>
@@ -375,7 +384,7 @@
 
 <script>
 /* ================= DATA: مبني على كتاب الطالب ودليل المعلم - علوم - صف رابع - فصل أول ================= */
-const DATA = [
+const DATA1 = [
   { id:1, key:'u1', title:'تصنيف الكائنات الحية', icon:'🧬', accent:'#2e7d32',
     lessons:[
       { title:'التصنيف', topics:[
@@ -481,6 +490,111 @@ const DATA = [
   },
 ];
 
+/* ================= DATA: الفصل الدراسي الثاني (الوحدات 6-10) ================= */
+const DATA2 = [
+  { id:6, key:'u6', title:'الضوء', icon:'💡', accent:'#f9a825', accent2:'#ffd54f',
+    lessons:[
+      { title:'خصائص الضوء', topics:[
+        {term:'الضوء', en:'Light', icon:'💡', def:'شكل من أشكال الطاقة نُحسّ به عن طريق العين، ويُمكّننا من رؤية الأجسام من حولنا.'},
+        {term:'الشعاع الضوئي', en:'Light Ray', icon:'📏', def:'المسار الذي ينتقل فيه الضوء، ويُمثَّل بخط مستقيم عليه سهم يدل على اتجاه انتقال الضوء.'},
+        {term:'انعكاس الضوء', en:'Reflection of Light', icon:'🪞', def:'ارتداد الأشعة الضوئية عن سطوح المواد المختلفة في خطوط مستقيمة.'},
+        {term:'الانعكاس المنتظم', en:'Specular Reflection', icon:'🪩', def:'انعكاس الضوء عن الأجسام الملساء بخطوط مستقيمة وبالاتجاه نفسه، كما في المرآة.'},
+        {term:'الانعكاس غير المنتظم', en:'Diffuse Reflection', icon:'🧱', def:'انعكاس الضوء عن الأجسام المعتِمة بخطوط مستقيمة، ولكن باتجاهات مختلفة.'},
+        {term:'المواد الشفافة', en:'Transparent Materials', icon:'🪟', def:'المواد التي يمكن للضوء أن يمر خلالها بالكامل، فتُرى الأشياء من خلالها بوضوح، كالزجاج.'},
+        {term:'المواد شبه الشفافة', en:'Translucent Materials', icon:'🧊', def:'المواد التي تسمح بمرور جزء من الضوء خلالها؛ لذا يمكن رؤية الأشياء خلالها بوضوح أقل، أو يتغير بعض صفاتها كاللون.'},
+        {term:'المواد المعتمة', en:'Opaque Materials', icon:'🚪', def:'المواد التي تمنع الضوء من المرور خلالها؛ لذا لا يمكن الرؤية خلالها.'},
+      ]},
+      { title:'تكوّن الظلال', topics:[
+        {term:'الظل', en:'Shadow', icon:'🌑', def:'منطقة مظلمة تتكوّن عندما يسقط الضوء على جسم معتم فيمنعه من المرور، فيتكوّن الظل خلف الجسم في الجهة المقابلة لمصدر الضوء.'},
+      ]},
+      { title:'إثراء وتوسع: النظارة الذكية', topics:[
+        {term:'النظارة الذكية', en:'Smart Glasses', icon:'🕶️', def:'ابتكار للمخترع الأردني عمر ناجي، نظارة ذكية تساعد المكفوف على تمييز الأشياء من حوله ومعرفتها، باستخدام كاميرا مثبّتة فيها تحدد الأشياء المختلفة وتنقل المعلومات إليه عن طريق سماعة متصلة بها.'},
+      ]},
+    ]
+  },
+  { id:7, key:'u7', title:'حركة الأرض', icon:'🌍', accent:'#1565c0', accent2:'#64b5f6',
+    lessons:[
+      { title:'الليل والنهار', topics:[
+        {term:'دورة الأرض اليومية', en:"Earth's Daily Cycle", icon:'🌗', def:'دوران الأرض حول محورها دورة كاملة مدة يوم كامل، أي كل (24h)، وينتج عنه تعاقب الليل والنهار.'},
+        {term:'محور الدوران', en:'Rotate Axis', icon:'📍', def:'خط وهمي يمتد من القطب الشمالي ويمر في مركز الأرض، وينتهي عند القطب الجنوبي، وتدور الأرض حوله.'},
+      ]},
+      { title:'الفصول الأربعة', topics:[
+        {term:'المدار', en:'Orbit', icon:'🛰️', def:'المسار الذي يأخذه جسم ما أثناء دورانه حول جسم آخر.'},
+        {term:'دورة حياة الفصول الأربعة', en:'The Four Seasons', icon:'🍂', type:'cycle', def:'تحدث الفصول الأربعة بسبب ميلان محور الأرض ودورانها حول الشمس، وتتعاقب الفصول على مدار السنة.', stages:[
+          {name:'الربيع', en:'Spring', icon:'🌸', desc:'يميل نصف الكرة الأرضية الشمالي قليلًا نحو الشمس، فتعتدل درجات الحرارة تدريجيًا.'},
+          {name:'الصيف', en:'Summer', icon:'☀️', desc:'يكون نصف الكرة الشمالي في أقصى ميل له نحو الشمس، فيكون النهار طويلًا والجو حارًا.'},
+          {name:'الخريف', en:'Autumn', icon:'🍁', desc:'يبدأ الميل بالانعكاس تدريجيًا، فتبدأ درجات الحرارة بالانخفاض.'},
+          {name:'الشتاء', en:'Winter', icon:'❄️', desc:'يميل نصف الكرة الشمالي بعيدًا عن الشمس، فيكون النهار قصيرًا والجو باردًا.'},
+        ]},
+        {term:'دورة الأرض السنوية', en:'Annual Earth Cycle', icon:'🔄', def:'الدورة الكاملة للأرض حول الشمس كل سنة، مدتها 365 يومًا تقريبًا، وينتج عن ميل محور الأرض خلالها تعاقب الفصول الأربعة.'},
+      ]},
+      { title:'إثراء وتوسع: أعمل كالعلماء', topics:[
+        {term:'اختلاف ساعات النهار بين نصفَي الكرة الأرضية', en:'Daylight Hours Variation', icon:'🌏', def:'بسبب ميل محور الأرض، يختلف عدد ساعات النهار بين نصفَي الكرة الأرضية الشمالي والجنوبي في الوقت نفسه؛ فعندما يطول النهار في الأردن خلال الصيف، يكون النهار أقصر في أستراليا لأنها تعيش الشتاء وقتها، والعكس صحيح.'},
+      ]},
+    ]
+  },
+  { id:8, key:'u8', title:'القوة والطاقة', icon:'⚡', accent:'#d84315', accent2:'#ff8a65',
+    lessons:[
+      { title:'القوة', topics:[
+        {term:'القوة', en:'Force', icon:'💪', def:'المؤثر الذي يعمل على تغيير الحالة الحركية لأي جسم.'},
+        {term:'قوة الجاذبية الأرضية', en:'Gravity Force', icon:'🌎', def:'القوة التي تؤثر في جميع الأجسام على سطح الأرض من كائنات حية وجمادات، فتعمل على سحب الأجسام نحو الأرض.'},
+        {term:'قوة الاحتكاك', en:'Friction Force', icon:'🧲', def:'القوة التي تنشأ عندما تتلامس سطوح الأجسام؛ فتمنعها من الانزلاق بسهولة بعضها فوق بعض.'},
+        {term:'قوة الشدّ', en:'Tension Force', icon:'🪢', def:'القوة التي تنشأ في الخيط أو الحبل، نتيجة الحركة التي تعمل على شدّ الأجسام.'},
+        {term:'القوة المغناطيسية', en:'Magnetic Force', icon:'🧲', def:'القوة التي يؤثر بها المغناطيس في الأجسام والمغانط الأخرى.'},
+      ]},
+      { title:'الطاقة', topics:[
+        {term:'الطاقة', en:'Energy', icon:'🔋', def:'القدرة على إنجاز عمل ما.'},
+        {term:'الطاقة الحركية', en:'Kinetic Energy', icon:'🏃', def:'الطاقة التي تمكّن الجسم من الحركة.'},
+        {term:'طاقة الوضع', en:'Potential Energy', icon:'🪨', def:'الطاقة المخزونة داخل الجسم.'},
+      ]},
+      { title:'إثراء وتوسع: الطاقة المائية', topics:[
+        {term:'الطاقة المائية', en:'Water (Hydro) Energy', icon:'💧', def:'طاقة كهربائية تُولَّد من حركة المياه الجارية أو الساقطة من أعالي السدود؛ إذ يحرك الماء الساقط مراوح (توربينات) موصولة بمولدات كهربائية، وهي من مصادر الطاقة المتجددة منخفضة التكلفة ولا تؤدي إلى تلوث البيئة.'},
+      ]},
+    ]
+  },
+  { id:9, key:'u9', title:'الكهرباء', icon:'🔌', accent:'#283593', accent2:'#7986cb',
+    lessons:[
+      { title:'الدارات الكهربائية البسيطة', topics:[
+        {term:'التيار الكهربائي', en:'Electric Current', icon:'⚡', def:'حركة الشحنات الكهربائية باتجاه واحد، ولا يمرّ التيار الكهربائي إلا في الدارات الكهربائية المغلقة.'},
+        {term:'الدارة الكهربائية', en:'Electric Circuit', icon:'🔁', def:'المسار المغلَق الذي تمرّ فيه الكهرباء.'},
+        {term:'الأسلاك', en:'Wires', icon:'🔗', def:'مواد موصلة تسمح بمرور الكهرباء ونقلها في الدارة الكهربائية.'},
+        {term:'المصباح الكهربائي', en:'Light Bulb', icon:'💡', def:'يُستخدم في الدارة الكهربائية للكشف عن مرور الكهرباء.'},
+        {term:'البطارية', en:'Battery', icon:'🔋', def:'المكوّن الذي يزوّد الدارة بالكهرباء.'},
+        {term:'المفتاح الكهربائي', en:'Electric Switch', icon:'🔘', def:'المكوّن الذي يُستخدم للتحكم في فتح الدارة أو إغلاقها في الأجهزة الكهربائية المختلفة.'},
+      ]},
+      { title:'المواد الموصلة والمواد العازلة', topics:[
+        {term:'المواد الموصلة', en:'Conductors', icon:'🥄', def:'المواد التي تسمح بمرور التيار الكهربائي خلالها.'},
+        {term:'المواد العازلة', en:'Insulators', icon:'🧤', def:'المواد التي لا تسمح بمرور التيار الكهربائي خلالها.'},
+      ]},
+      { title:'إثراء وتوسع: ترشيد استهلاك الطاقة', topics:[
+        {term:'ملصق كفاءة الطاقة الكهربائية', en:'Energy Efficiency Label', icon:'🏷️', def:'ملصق إرشادي يوضع على الأجهزة الكهربائية (كالمكيفات والثلاجات)، يبيّن كفاءة الجهاز في استهلاك الطاقة بدرجات من A إلى D، ليساعد المستخدم على مقارنة الأجهزة واختيار الأكثر توفيرًا للطاقة.'},
+      ]},
+    ]
+  },
+  { id:10, key:'u10', title:'الموارد الطبيعية في البيئة', icon:'🌳', accent:'#33691e', accent2:'#9ccc65',
+    lessons:[
+      { title:'الموارد الحيوية', topics:[
+        {term:'الموارد الحيوية', en:'Biotic Resources', icon:'🌾', def:'موارد نحصل عليها من الكائنات الحية، وما يُنتَج عنها من مشتقّات مختلفة؛ مثل: الخشب والحليب واللحوم.'},
+      ]},
+      { title:'الموارد غير الحيوية', topics:[
+        {term:'الموارد غير الحيوية', en:'Abiotic Resources', icon:'⛰️', def:'أشياء غير حية توجد في الطبيعة، ونحتاج إليها في حياتنا، مثل: الماء والهواء والمعادن والصخور.'},
+        {term:'الصخور', en:'Rocks', icon:'🪨', def:'مادة طبيعية صلبة تكوّنت بطرائق مختلفة، تتكوّن من نوع واحد أو أكثر من المعادن، وقد تحتوي على مواد أصلها من كائنات حية.'},
+        {term:'المعدن', en:'Mineral', icon:'💎', def:'مادة صلبة توجد على شكل طبيعي في الصخور، أصلها ليس من الكائنات الحية.'},
+        {term:'المياه السطحية', en:'Surface Water', icon:'🌊', def:'ماء على سطح الأرض، يتجمّع في البحار والمحيطات والأنهار.'},
+        {term:'المياه الجوفية', en:'Ground Water', icon:'💧', def:'ماء في باطن الأرض، ناتج عن تسرّب جزء من ماء المطر عبر التربة والشقوق في الصخور.'},
+        {term:'النفط', en:'Oil', icon:'🛢️', def:'مصدر مهم للطاقة، نستفيد منه في تشغيل المصانع وتحريك وسائل النقل والتدفئة، وفي إنتاج كثير من المواد التي نستخدمها في حياتنا اليومية.'},
+        {term:'الوقود الأحفوري', en:'Fossil Fuels', icon:'⛽', def:'مورد طبيعي حيوي، يتكوّن من بقايا النباتات والحيوانات التي عاشت قبل ملايين السنين.'},
+      ]},
+      { title:'إثراء وتوسع: الكنوز المدفونة', topics:[
+        {term:'إعادة تدوير الأجهزة الإلكترونية', en:'E-waste Recycling', icon:'♻️', def:'تحتوي بعض رقائق أجهزة الحاسوب القديمة على مواد ثمينة مثل الذهب والفضة والنحاس والرصاص؛ لذلك تسعى مصانع إعادة التدوير إلى استخلاصها بدلًا من التخلص منها، وهذا يقلل الهدر ويحافظ على الموارد.'},
+      ]},
+    ]
+  },
+];
+
+const SEMESTERS = { 1: DATA1, 2: DATA2 };
+let currentSemester = 1;
+
 /* ================= APP LOGIC ================= */
 const unitsGrid = document.getElementById('unitsGrid');
 const lessonsList = document.getElementById('lessonsList');
@@ -499,9 +613,13 @@ const backBtn = document.getElementById('backBtn');
 
 let state = { unit:null, lesson:null };
 
+const LIGHT_ACCENT = { u1:'#66bb6a', u2:'#4db6ac', u3:'#ab47bc', u4:'#ff9800' };
+const semTabs = document.getElementById('semTabs');
+
 function renderHome(){
-  unitsGrid.innerHTML = DATA.map(u => `
-    <div class="unit-card ${u.key}" data-id="${u.id}">
+  const units = SEMESTERS[currentSemester];
+  unitsGrid.innerHTML = units.map(u => `
+    <div class="unit-card" style="--c1:${u.accent};--c2:${u.accent2 || LIGHT_ACCENT[u.key] || u.accent}" data-id="${u.id}">
       <span class="num">الوحدة ${arNum(u.id)}</span>
       <span class="icon3d">${u.icon}</span>
       <h3>${u.title}</h3>
@@ -511,12 +629,26 @@ function renderHome(){
   [...unitsGrid.querySelectorAll('.unit-card')].forEach(el=>{
     el.addEventListener('click', ()=> openUnit(parseInt(el.dataset.id)));
   });
+  [...semTabs.querySelectorAll('.sem-tab')].forEach(b=>{
+    b.classList.toggle('active', parseInt(b.dataset.sem)===currentSemester);
+  });
 }
 
-function arNum(n){ return ['', 'الأولى','الثانية','الثالثة','الرابعة','الخامسة'][n] || n; }
+[...semTabs.querySelectorAll('.sem-tab')].forEach(b=>{
+  b.addEventListener('click', ()=>{
+    currentSemester = parseInt(b.dataset.sem);
+    renderHome();
+  });
+});
+
+function arNum(n){ return ['', 'الأولى','الثانية','الثالثة','الرابعة','الخامسة','السادسة','السابعة','الثامنة','التاسعة','العاشرة'][n] || n; }
+
+function findUnit(id){
+  return [...DATA1, ...DATA2].find(u=>u.id===id);
+}
 
 function openUnit(id){
-  state.unit = DATA.find(u=>u.id===id);
+  state.unit = findUnit(id);
   headerTitle.textContent = state.unit.title;
   headerSub.textContent = 'اختر درسًا لاستكشاف مفاهيمه';
   backBtn.classList.add('show');
@@ -580,13 +712,14 @@ function openLesson(i){
   backBtn.classList.add('show');
   topicsGrid.innerHTML = state.lesson.topics.map((t,idx)=>topicCardHTML(t, state.unit.accent, idx)).join('');
   bindFlipCards(topicsGrid, state.lesson.topics, state.unit.accent, {screen:'lesson', title:state.lesson.title, sub:state.unit.title});
+  quizBtn.style.display = state.lesson.topics.length >= 2 ? 'block' : 'none';
   showScreen('lesson');
 }
 
 /* ===== Global search across all units/lessons ===== */
 function allTopicsFlat(){
   const list=[];
-  DATA.forEach(u=> u.lessons.forEach(l=> l.topics.forEach(t=> list.push({...t, accent:u.accent, unitTitle:u.title, lessonTitle:l.title}))));
+  [...DATA1, ...DATA2].forEach(u=> u.lessons.forEach(l=> l.topics.forEach(t=> list.push({...t, accent:u.accent, unitTitle:u.title, lessonTitle:l.title}))));
   return list;
 }
 const ALL_TOPICS = allTopicsFlat();
@@ -703,7 +836,7 @@ function showScreen(name){
 
 backBtn.addEventListener('click', ()=>{
   if(screens.cycle.classList.contains('active')){
-    const r = state.cycleReturn || {screen:'home', title:'مختبر العلوم ثلاثي الأبعاد', sub:'الصف الرابع • الفصل الدراسي الأول'};
+    const r = state.cycleReturn || {screen:'home', title:'مختبر العلوم ثلاثي الأبعاد', sub:'الصف الرابع • الفصلان الدراسيان'};
     headerTitle.textContent = r.title;
     headerSub.textContent = r.sub;
     if(r.screen==='home') backBtn.classList.remove('show');
@@ -714,7 +847,7 @@ backBtn.addEventListener('click', ()=>{
     showScreen('lesson');
   } else if(screens.search.classList.contains('active')){
     headerTitle.textContent = 'مختبر العلوم ثلاثي الأبعاد';
-    headerSub.textContent = 'الصف الرابع • الفصل الدراسي الأول';
+    headerSub.textContent = 'الصف الرابع • الفصلان الدراسيان';
     backBtn.classList.remove('show');
     searchInput.value='';
     showScreen('home');
@@ -724,7 +857,7 @@ backBtn.addEventListener('click', ()=>{
     showScreen('unit');
   } else {
     headerTitle.textContent = 'مختبر العلوم ثلاثي الأبعاد';
-    headerSub.textContent = 'الصف الرابع • الفصل الدراسي الأول';
+    headerSub.textContent = 'الصف الرابع • الفصلان الدراسيان';
     backBtn.classList.remove('show');
     showScreen('home');
   }

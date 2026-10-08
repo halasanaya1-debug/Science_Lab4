@@ -1,5 +1,5 @@
 // service-worker.js — مختبر العلوم ثلاثي الأبعاد (الصف الرابع)
-const CACHE_VERSION = "sci4lab-v4";
+const CACHE_VERSION = "sci4lab-v5";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
